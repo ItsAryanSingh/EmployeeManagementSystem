@@ -1,0 +1,397 @@
+<html>
+
+<head xmlns:th="http://www.thymeleaf.org">
+	<title>ADD NEW DEPARTMENT</title>
+	<style>
+		body {
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			background-repeat: no-repeat;
+			background-size: cover;
+			filter: blur(0.2px);
+			-webkit-filter: blur(0.2px);
+
+		}
+
+
+		.topnav {
+			overflow: hidden;
+			background-color: #212F3C;
+			opacity: 0.7;
+			height: 7.5%;
+			padding-top: 4.5px;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+		}
+
+		.topnav:hover {
+			background-color: #212F3C;
+			opacity: 1;
+		}
+
+		.topnav a {
+
+			float: left;
+			color: #f2f2f2;
+			text-align: center;
+			padding: 16px 16px;
+			text-decoration: none;
+			font-size: large;
+		}
+
+		.topnav a:hover {
+			background-color: lightgreen;
+			color: black;
+			border-radius: 10px;
+		}
+
+		.topnav a.active {
+
+			border-radius: 10px;
+		}
+
+		.heading {
+			margin-left: 10%;
+			text-align: center;
+			font-size: 45px;
+			text-shadow: 0 0 6px #4A235A;
+			width: 30%;
+			float: left;
+		}
+
+		.headingnew {
+
+			margin-right: 8.5%;
+			text-align: center;
+			font-size: 45px;
+			text-shadow: 0 0 6px #4A235A;
+			width: 40%;
+			float: right;
+		}
+
+
+
+		form {
+			margin: 0px;
+			position: absolute;
+			top: 43.5%;
+			left: 25%;
+			transform: translate(-50%, -50%);
+			text-align: center;
+			padding: 30px 30px 30px 30px;
+			border: 2px solid black;
+
+		}
+
+		input[type=text],
+		input[type=int],
+		select,
+		textarea,
+		input[type=date] {
+			width: 100%;
+			padding: 12px;
+			border-radius: 10px;
+			border-color: grey;
+			border: 2px solid;
+			font-family: Tahoma, Verdana, sans-serif;
+			font-size: medium;
+
+
+
+		}
+
+		input[type=text]:hover,
+		input[type=int]:hover,
+		select:hover,
+		textarea:hover {
+			background-color: silver;
+
+		}
+
+		label {
+			padding: 12px 12px 12px 0;
+			display: inline-block;
+			font-family: Georgia, serif;
+			font-weight: bold;
+			font-size: large;
+
+		}
+
+		input[type=submit] {
+			background-color: #04AA6D;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			float: right;
+		}
+
+		input[type=submit]:hover {
+			background-color: #45a049;
+		}
+
+
+
+		.col-25 {
+			float: left;
+			width: 52%;
+			margin-top: 6px;
+			text-align: center;
+		}
+
+		.col-50 {
+			width: 50%;
+		}
+
+		.photo {
+			float: right;
+
+		}
+
+		.col-75 {
+			float: left;
+			width: 48%;
+			margin-top: 6px;
+			text-align: center;
+		}
+
+		/* Clear floats after the columns */
+		.row:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+		@media screen and (max-width: 600px) {
+
+			.col-25,
+			.col-75,
+			input[type=submit] {
+				width: 100%;
+				margin-top: 0;
+			}
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.form-control {
+			background-color: lightblue;
+			border-bottom: medium;
+		}
+
+		.button {
+			background-color: steelblue;
+			padding: 16px 32px;
+			font-size: larger;
+			text-align: center;
+			border-radius: 10px;
+			border: 2px solid black;
+			font-weight: bold;
+			height: 53px;
+			width: 300px;
+			margin: auto;
+		}
+
+		.button:hover {
+			border: 2px solid white;
+			box-shadow: 0 0 8px 4px silver;
+		}
+
+		.rounded {
+			border: 2px solid black;
+			box-shadow: 0 0 1.5px 1.5px midnightblue;
+		}
+
+		.styled-table {
+
+			margin-left: 35%;
+
+			border: none;
+			border-collapse: collapse;
+			font-size: medium;
+			font-family: "Lucida Console", "Courier New", monospace;
+			width: 65%;
+
+			background-color: lightyellow;
+
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+
+		}
+
+		.styled-table thead tr {
+			box-shadow: 0 0 5px rgb(192, 192, 192);
+			background-color: goldenrod;
+			color: #ffffff;
+			border-collapse: collapse;
+			text-align: center;
+			font-size: large;
+		}
+
+
+
+		.styled-table th,
+		.styled-table td {
+			padding: 12px 15px;
+			text-align: center;
+		}
+
+		.styled-table tbody tr {
+
+			box-shadow: 0 0 5px rgb(192, 192, 192);
+			border: none;
+			border-collapse: collapse;
+
+		}
+
+		.styled-table tbody tr:hover {
+			background-color: LightGray;
+			border-radius: 15px;
+		}
+
+		.scrolltable {
+			overflow-y: auto;
+			overflow-x: hidden;
+			max-height: 70%;
+			width: 70%;
+			margin-left: 25%;
+			margin-top: 3.15%;
+
+		}
+
+		.styled-table tbody td {
+			border: none;
+			border-collapse: collapse;
+		}
+
+		.blur-filter {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-o-filter: blur(2px);
+			-ms-filter: blur(2px);
+			filter: blur(2px);
+		}
+	</style>
+
+
+
+</head>
+
+
+<body>
+
+	<body
+		background="https://media.istockphoto.com/photos/businessman-hand-is-on-the-trackpad-typing-on-a-laptop-keyboard-while-picture-id1348546519?b=1&k=20&m=1348546519&s=170667a&w=0&h=yAPirAz86Sk_OXEizRVGz1CA1xTJNBDRRSsyixCFpNg=">
+		<div class="topnav">
+
+			<a class="active" th:href="@{/Admin/AdminDashboard}">HOME</a>
+			<a th:href="AddEmployee">ADD EMPLOYEE</a>
+			<a th:href="@{/Admin/ViewAttendanceRequests}">ATTENDANCE</a>
+			<a href="/Admin/AddDepartment">DEPARTMENTS</a>
+			<a href="/LoginPage" style="float:right;">LOGOUT</a>
+
+		</div><br>
+		<div class="heading">ADD DEPARTMENT</div>
+		<div class="border-color">
+
+			<form action="#" th:action="@{/SaveNewDepartment}" th:object="${departments}" method="POST">
+				<div class="row">
+					<div class="col-25">
+						<label for="id">DEPARTMENT ID *</label>
+					</div>
+					<div class="col-75">
+						<input type="int" class="text-center" name="deptId" placeholder="Department ID.."
+							oninput="this.value = this.value.toUpperCase()" required />
+					</div>
+				</div><br>
+				<div class="row">
+					<div class="col-25">
+						<label for="fname">DEPARTMENT NAME *</label>
+					</div>
+					<div class="col-75">
+						<input type="text" class="text-center" name="deptName" placeholder="Department Name.."
+							oninput="this.value = this.value.toUpperCase()" required />
+					</div>
+				</div><br>
+				<div class="row">
+					<div class="col-25">
+						<label for="lname">LOCATION *</label>
+					</div>
+					<div class="col-75">
+						<input type="text" class="text-center" name="location" placeholder="Department Location.."
+							oninput="this.value = this.value.toUpperCase()" required />
+					</div>
+				</div>
+				<br><br>
+				<div class="row text-center">
+					<button type="submit" class="button">ADD DEPARTMENT</button>
+				</div><br>
+			</form>
+
+			<div class="headingnew">
+				ALL DEPARTMENTS </div><br>
+			<div class="scrolltable">
+				<table class="styled-table sortable table">
+					<thead>
+						<tr>
+							<th scope="col">Department Id</th>
+							<th scope="col">Department Name</th>
+							<th scope="col">Location</th>
+
+
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="department: ${departments}">
+							<td th:text="${department.deptId}"></td>
+							<td th:text="${department.deptName}"></td>
+							<td th:text="${department.location}"></td>
+
+						</tr>
+
+
+
+					</tbody>
+				</table>
+			</div>
+
+
+
+			<!-- Bootstrap -->
+			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+				integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+				crossorigin="anonymous"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+				integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+				crossorigin="anonymous"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+				integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+				crossorigin="anonymous"></script>
+			<script type="text/javascript">
+				$(document).ready(function () {
+					$('#fileImage').change(function () {
+						showImageThumbnail(this)
+					});
+
+				});
+				function showImageThumbnail(fileInput) {
+					file = fileInput.files[0];
+					reader = new FileReader();
+					reader.onload = function (e) {
+						$('#thumbnail').attr('src', e.target.result);
+					};
+					reader.readAsDataURL(file);
+				}
+				function myFun() {
+					alert("Updated Succesfully!");
+				}
+
+			</script>
+		</div>
+
+	</body>
+
+</html>

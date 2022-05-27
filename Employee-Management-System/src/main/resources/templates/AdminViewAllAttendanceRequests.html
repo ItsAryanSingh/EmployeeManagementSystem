@@ -1,0 +1,318 @@
+<html>
+
+<head xmlns:th="http://www.thymeleaf.org">
+	<title>ALL ATTENDANCE REQUESTS</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+
+	<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+
+
+	<style>
+		body {
+			margin: 0;
+			font-family: Arial, Helvetica, sans-serif;
+			text-transform: uppercase;
+
+		}
+
+
+
+
+		p {
+			display: flex;
+			justify-content: space-between;
+			font-size: 25px;
+		}
+
+
+
+		.myInput {
+			margin-left: 1%;
+			width: 25%;
+			font-size: 16px;
+			padding: 8px 5px 8px 25px;
+			border: 1px solid black;
+			border-radius: 10px;
+			background-color: lightskyblue;
+			font-family: Arial, Helvetica, sans-serif;
+
+		}
+
+		.myInput:hover {
+			box-shadow: 0 0 8px 4px skyblue;
+			background-color: white;
+		}
+
+
+
+		.topnav {
+			overflow: hidden;
+			background-color: #212F3C;
+			opacity: 0.7;
+			height: 8.2%;
+			padding-top: 4.5px;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+
+
+		}
+
+		.topnav:hover {
+			background-color: #212F3C;
+			opacity: 1;
+		}
+
+		.topnav a {
+
+			float: left;
+			color: #f2f2f2;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			font-size: large;
+		}
+
+		.topnav a:hover {
+			background-color: lightgreen;
+			color: black;
+			border-radius: 10px;
+		}
+
+		.topnav a.active {
+
+			border-radius: 10px;
+		}
+
+		.heading {
+			text-align: center;
+			font-size: 50px;
+			text-shadow: 0 0 6px #4A235A;
+			font-family: "Lucida Console", "Courier New", monospace;
+
+		}
+
+		.styled-table {
+			border: none;
+			border-collapse: collapse;
+			font-size: medium;
+			font-family: "Lucida Console", "Courier New", monospace;
+			width: 85%;
+			margin: auto;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+
+		}
+
+		.styled-table thead tr {
+			box-shadow: 0 0 5px rgb(192, 192, 192);
+			background-color: goldenrod;
+			color: #ffffff;
+			border-collapse: collapse;
+			text-align: center;
+			font-size: large;
+		}
+
+
+
+		.styled-table th,
+		.styled-table td {
+			padding: 12px 15px;
+			text-align: center;
+		}
+
+		.styled-table tbody tr {
+
+			box-shadow: 0 0 5px rgb(192, 192, 192);
+			border: none;
+			border-collapse: collapse;
+
+		}
+
+		.styled-table tbody tr:hover {
+			background-color: LightGray;
+			border-radius: 15px;
+		}
+
+		.styled-table tbody td {
+			border: none;
+			border-collapse: collapse;
+		}
+
+		.button {
+			color: black;
+			border: 2px solid #212F3C;
+			text-decoration: none;
+			padding: 10px 20px;
+			border-radius: 10px;
+			display: inline-block;
+			margin-left: 43%;
+		}
+
+		.button:hover {
+			background-color: #212F3C;
+			color: white;
+			text-decoration: none;
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.button-delete {
+			color: black;
+			border: 2px solid #f44336;
+			text-decoration: none;
+			padding: 10px 20px;
+			border-radius: 10px;
+			display: inline-block;
+		}
+
+		.button-delete:hover {
+			background-color: #f44336;
+			color: white;
+			text-decoration: none;
+		}
+	</style>
+
+
+
+</head>
+
+<body onload="sortTable()">
+	<div class="topnav">
+
+		<a class="active" th:href="@{/Admin/AdminDashboard}">HOME</a>
+		<a th:href="@{/Admin/AddEmployee}">ADD EMPLOYEE</a>
+		<a th:href="@{/Admin/ViewAttendanceRequests}">ATTENDANCE</a>
+		<a href="/Admin/AddDepartment">DEPARTMENTS</a>
+		<a href="/LoginPage" style="float: right;">LOGOUT</a>
+
+	</div>
+	<br>
+	<div class="heading">
+		ATTENDANCE REQUESTS </div>
+
+	<input class="myInput" type="text" id="myInput" onkeyup="myFunc()" placeholder="	ENTER EMPLOYEE NAME HERE 
+" title="Type in a name">
+	<br><br>
+	<table class="styled-table " id="myTable">
+		<thead>
+			<tr>
+				<th scope="col">Attendance Id</th>
+				<th scope="col">Employee Id</th>
+				<th scope="col">Employee Name</th>
+				<th scope="col">In-time</th>
+				<th scope="col">Out-Time</th>
+				<th scope="col">Status</th>
+				<th></th>
+
+
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="attendance: ${listAttendance}">
+				<td th:text="${attendance.attId}"></td>
+				<td th:text="${attendance.empId}"></td>
+				<td th:text="${attendance.firstName+attendance.lastName}"></td>
+				<td th:text="${attendance.inTime}"></td>
+				<td th:text="${attendance.outTime}"></td>
+				<td th:text="${attendance.status}"></td>
+				<td> <span th:switch="${attendance.status}" th:case="Pending">
+						<a class="btn btn-success"
+							th:href="@{/Admin/ViewAttendanceRequests/{id}/accept(id=${attendance.attId})}">Accept</a>
+						<a class="btn btn-danger"
+							th:href="@{/Admin/ViewAttendanceRequests/{id}/reject(id=${attendance.attId})}">Reject</a>
+					</span>
+				</td>
+
+			</tr>
+
+		</tbody>
+	</table>
+
+	<!--<script>
+		function myFunction() {
+			var input, filter, table, tr, td, i, txtValue;
+			input = document.getElementById("myInput");
+			filter = input.value.toUpperCase();
+			table = document.getElementById("myTable");
+			tr = table.getElementsByTagName("tr");
+			for (i = 0; i < tr.length; i++) {
+				td = tr[i].getElementsByTagName("td")[2];
+				if (td) {
+					txtValue = td.textContent || td.innerText;
+					if (txtValue.toUpperCase().indexOf(filter) > -1) {
+						tr[i].style.display = "";
+					} else {
+						tr[i].style.display = "none";
+					}
+				}
+			}
+		}
+	</script>-->
+
+	<script>
+		function sortTable() {
+			var table, rows, switching, i, x, y, shouldSwitch;
+			table = document.getElementById("myTable");
+			switching = true;
+			/*Make a loop that will continue until
+			no switching has been done:*/
+			while (switching) {
+				//start by saying: no switching is done:
+				switching = false;
+				rows = table.rows;
+				/*Loop through all table rows (except the
+				first, which contains table headers):*/
+				for (i = 1; i < (rows.length - 1); i++) {
+					//start by saying there should be no switching:
+					shouldSwitch = false;
+					/*Get the two elements you want to compare,
+					one from current row and one from the next:*/
+					x = rows[i].getElementsByTagName("TD")[0];
+					y = rows[i + 1].getElementsByTagName("TD")[0];
+					//check if the two rows should switch place:
+					if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+						//if so, mark as a switch and break the loop:
+						shouldSwitch = true;
+						break;
+					}
+				}
+				if (shouldSwitch) {
+					/*If a switch has been marked, make the switch
+					and mark that a switch has been done:*/
+					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+					switching = true;
+				}
+			}
+		}
+	</script>
+
+	<script>
+		function myFunc() {
+			var input, filter, table, tr, td, i;
+			input = document.getElementById("myInput");
+			filter = input.value.toUpperCase();
+			table = document.getElementById("myTable");
+			tr = table.getElementsByTagName("tr"),
+				th = table.getElementsByTagName("th");
+
+			// Loop through all table rows, and hide those who don't match the        search query
+			for (i = 1; i < tr.length; i++) {
+				tr[i].style.display = "none";
+				for (var j = 0; j < th.length; j++) {
+					td = tr[i].getElementsByTagName("td")[j];
+					if (td) {
+						if (td.innerHTML.toUpperCase().indexOf(filter.toUpperCase()) > -1) {
+							tr[i].style.display = "";
+							break;
+						}
+					}
+				}
+			}
+		}</script>
+
+
+
+</body>
+
+</html>

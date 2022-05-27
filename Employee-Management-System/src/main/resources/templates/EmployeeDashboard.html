@@ -1,0 +1,297 @@
+<html>
+
+<head xmlns:th="http://www.thymeleaf.org">
+	<title>EMPLOYEE DASHBOARD</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+
+
+	<!-- Bootstrap -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+
+
+
+	<style>
+		.text-center {
+			text-align: center;
+
+		}
+
+
+		p {
+			display: flex;
+			justify-content: space-between;
+			font-size: 25px;
+		}
+
+
+		.topnav {
+			overflow: hidden;
+			background-color: #212F3C;
+			opacity: 0.7;
+			height: 8.2%;
+			padding-top: 4.5px;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+
+
+		}
+
+		.topnav:hover {
+			background-color: #212F3C;
+			opacity: 1;
+		}
+
+		.topnav a {
+
+			float: left;
+			color: #f2f2f2;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			font-size: large;
+		}
+
+		.topnav a:hover {
+			background-color: lightgreen;
+			color: black;
+			border-radius: 10px;
+		}
+
+		.topnav a.active {
+
+			border-radius: 10px;
+		}
+
+		.heading {
+			text-align: center;
+			font-size: 30px;
+		}
+
+		.styled-table {
+			border: 2px solid black;
+			border-collapse: collapse;
+			margin-left: auto;
+			margin-right: auto;
+			font-size: 0.9em;
+			font-family: sans-serif;
+			width: 90%;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+		}
+
+		.styled-table thead tr {
+			background-color: #009879;
+			color: #ffffff;
+			border: 2px solid black;
+			border-collapse: collapse;
+			text-align: left;
+		}
+
+		.styled-table th,
+		.styled-table td {
+			padding: 12px 15px;
+			border: 2px solid black;
+			border-collapse: collapse;
+			text-align: center;
+		}
+
+		.styled-table tbody tr {
+
+			border: 2px solid black;
+			border-collapse: collapse;
+
+		}
+
+		.styled-table tbody td {
+			border: 2px solid black;
+			border-collapse: collapse;
+
+		}
+
+		.label {
+			padding: 12px 12px 12px 0;
+			font-size: x-large;
+
+		}
+
+		.col-7 {
+			background-color: lightblue;
+			opacity: 0.9;
+			border: 1px solid darkcyan;
+			margin: auto;
+			width: max-content;
+			border-radius: 10px;
+		}
+
+		.col-7:hover {
+			background-color: lightblue;
+			opacity: 0.9;
+			border: 2px solid rgb(128, 128, 128);
+			box-shadow: 0 0 8px 3px rgb(192, 192, 192);
+		}
+
+		.col-auto {
+			margin: auto;
+			margin: auto;
+		}
+
+		.rounded {
+			border: 2px solid black;
+			box-shadow: 0 0 1.5px 1.5px midnightblue;
+		}
+
+		.container {
+			margin: auto;
+			margin-top: 2%;
+		}
+
+		.btn {
+			height: 47px;
+			width: 200px;
+			font-size: larger;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		.btn:hover {
+			box-shadow: 0 0 8px 3px rgb(192, 192, 192);
+
+		}
+
+		.username {
+			margin-right: 20px;
+
+		}
+
+
+		.topnavusername a {
+
+			color: black;
+			text-align: center;
+			padding: 14px 4px;
+			text-decoration: none;
+			font-size: large;
+			background-color: lightgreen;
+			border-radius: 10px;
+
+		}
+	</style>
+
+
+
+</head>
+
+<body background="https://www.teahub.io/photos/full/17-170178_background-office-images-hd.jpg">
+	<div class="topnav">
+
+		<a class="active" th:href="Dashboard">HOME</a>
+		<a th:href="RegularizeAttendance">REGULARIZE ATTENDANCE</a>
+		<a th:href="EmployeeAttendanceRequests">VIEW ATTENDANCE</a>
+
+		<div class="username topnavusername"><a href="" style="margin-left: 680px;">Welcome
+				<span style="text-transform: lowercase; margin-left:1px;"
+					th:text="${employee.firstName+ ' '  + employee.lastName}"></span></a></div>
+		<a href="/LoginPage" style="float:right;">LOGOUT</a>
+
+	</div>
+	<div class="text-center">
+		<div class="row container text-center">
+
+			<div class="col-7 text-center">
+				<div class="row text-center ">
+					<div class="text-center col-form-label col-sm col-auto">
+						<h1><b> <span th:text=${employee.userName}></span></b></h1>
+
+						<small class=" px-4"><span th:text=${employee.role}></span></small>
+					</div>
+				</div>
+				<hr color="darkslateblue">
+
+				<div class=" border-bottom text-center">
+					<div class="form-group row text-center">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>USERNAME</b></label>
+						<div class="col-auto">
+
+							<label class="col-form-label" th:text=${employee.userName}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>FIRST NAME</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.firstName}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>LAST NAME</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.lastName}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>GENDER</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.gender}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>DATE OF JOINING</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.dateOfJoining}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>DATE OF BIRTH</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.dateOfBirth}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b>DEPARTMENT NAME</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.departmentName}></label>
+
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="staticEmail" class="col-sm-5 col-form-label"><b> EMPLOYEE ID</b></label>
+						<div class="col-auto">
+							<label class="col-form-label" th:text=${employee.empId}></label>
+
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+			<div class="col-3 text-center">
+				<img th:src="@{${employee.photoImagePath}}" width="200px" class="rounded" alt="EMPLOYEE PHOTOGRAPH">
+
+				<br><br><br>
+
+				<div class="update-btn py-3">
+					<a href="#" th:href="@{/Employee/{id}/Update(id = ${employee.empId})}"
+						class="btn btn-outline-success">
+						UPDATE PROFILE
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+</html>

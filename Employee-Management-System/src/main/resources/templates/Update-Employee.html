@@ -1,0 +1,432 @@
+<html>
+
+
+<head xmlns:th="http://www.thymeleaf.org">
+	<title>UPDATE EMPLOYEE DETAILS</title>
+	<style>
+		body {
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			background-repeat: no-repeat;
+			background-size: cover;
+			backdrop-filter: blur(3px);
+
+
+		}
+
+		p {
+			display: flex;
+			justify-content: space-between;
+			font-size: 25px;
+		}
+
+		.topnav {
+			overflow: hidden;
+			background-color: #212F3C;
+			opacity: 0.7;
+			height: 7.5%;
+			padding-top: 5.4px;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+
+		}
+
+		.topnav:hover {
+			background-color: #212F3C;
+			opacity: 1;
+		}
+
+		.topnav a {
+
+			float: left;
+			color: #f2f2f2;
+			text-align: center;
+			padding: 16px 16px;
+			text-decoration: none;
+			font-size: large;
+		}
+
+		.topnav a:hover {
+			background-color: lightgreen;
+			color: black;
+			border-radius: 10px;
+		}
+
+		.topnav a.active {
+
+			border-radius: 10px;
+		}
+
+
+
+		form {
+			width: 97%;
+
+
+		}
+
+		input[type=text],
+		select,
+		textarea,
+		input[type=date] {
+			width: 100%;
+			padding: 12px;
+			border-radius: 10px;
+			border-color: grey;
+			border: 2px solid;
+			font-family: Tahoma, Verdana, sans-serif;
+			font-size: medium;
+
+
+
+		}
+
+		input[type=text]:hover,
+		select:hover,
+		textarea:hover {
+			background-color: darkcyan;
+
+		}
+
+		label {
+			padding: 12px 12px 12px 0;
+			display: inline-block;
+			font-family: Georgia, serif;
+			font-weight: bold;
+			font-size: large;
+
+		}
+
+		input[type=submit] {
+			background-color: #04AA6D;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			float: right;
+		}
+
+		input[type=submit]:hover {
+			background-color: #45a049;
+		}
+
+		.container {
+			margin: auto;
+			margin-top: 0%;
+
+		}
+
+		.col-25 {
+			float: left;
+			width: 25%;
+			margin-top: 6px;
+			text-align: center;
+		}
+
+		.col-50 {
+			width: 50%;
+		}
+
+		.photo {
+			margin-left: 60%;
+			margin-top: 1%;
+
+		}
+
+		.col-75 {
+			float: left;
+			width: 30%;
+			margin-top: 6px;
+			text-align: center;
+		}
+
+		/* Clear floats after the columns */
+		.row:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+		@media screen and (max-width: 600px) {
+
+			.col-25,
+			.col-75,
+			input[type=submit] {
+				width: 100%;
+				margin-top: 0;
+			}
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.form-control {
+			background-color: lightblue;
+			border-bottom: medium;
+		}
+
+		.button {
+			background-color: steelblue;
+			padding: 16px 32px;
+			font-size: larger;
+			text-align: center;
+			border-radius: 10px;
+			border: 2px solid black;
+			font-weight: bold;
+			height: 53px;
+			width: 400px;
+			margin-left: 70%;
+		}
+
+		.button:hover {
+			border: 2px solid white;
+			box-shadow: 0 0 8px 4px silver;
+		}
+
+		.rounded {
+			border: 2px solid black;
+			box-shadow: 0 0 1.5px 1.5px midnightblue;
+		}
+
+		.username {
+			margin-right: 20px;
+
+		}
+
+
+		.topnavusername a {
+
+			color: black;
+			text-align: center;
+			padding: 16px 4px;
+			text-decoration: none;
+			font-size: large;
+			background-color: lightgreen;
+			border-radius: 10px;
+
+		}
+	</style>
+	
+
+	
+	
+</head>
+
+
+<body
+	background="https://media.istockphoto.com/photos/businessman-hand-is-on-the-trackpad-typing-on-a-laptop-keyboard-while-picture-id1348546519?b=1&k=20&m=1348546519&s=170667a&w=0&h=yAPirAz86Sk_OXEizRVGz1CA1xTJNBDRRSsyixCFpNg=">
+	<div class="topnav">
+
+		<a class="active" th:href="Dashboard">HOME</a>
+		<a th:href="RegularizeAttendance">REGULARIZE ATTENDANCE</a>
+		<a th:href="EmployeeAttendanceRequests">VIEW ATTENDANCE</a>
+
+		<div class="username topnavusername"><a href="" style="margin-left: 680px;">Welcome
+				<span style="text-transform: lowercase; margin-left:1px;"
+					th:text="${employee.firstName+ ' '  + employee.lastName}"></span></a></div>
+		<a href="/LoginPage" style="float:right;">LOGOUT</a>
+
+
+
+	</div>
+	<div class="border-colour">
+
+
+		<form action="#" name="myForm" th:action="@{/updateEmployeeDashboard}" th:object="${employee}" method="POST"
+			enctype="multipart/form-data"  required>
+
+
+			<div class="row container text-center">
+				<div class="col-50">
+					<div class="col-25">
+						<label for="empId">EMPLOYEE ID</label>
+					</div>
+					<div class="col-25">
+						<input type="text" th:field="*{empId}" readonly placeholder="Id"
+							class="form-control text-center ">
+					</div>
+				</div>
+				<div class=" photo">
+					<div class="col-25">
+						<label for="photo">PHOTOGRAPH</label>
+					</div>
+					<div>
+						<img id="thumbnail" class="rounded-circle rounded" width="100px" height="100px"
+							th:src="@{${employee.photoImagePath}}" alt="Employee Photograph" />
+						<input type="file" name="fileImage" id="fileImage" accept="image/*" />
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="fname">FIRST NAME *</label>
+				</div>
+				<div class="col-75">
+					<input @keydown.space.prevent type="text" v-model:value="fname" class="text-center" th:field="*{firstName}" placeholder="Employee's First Name.."
+						oninput="this.value = this.value.toUpperCase()" pattern="[A-Za-z]+" oninvalid="setCustomValidity('Please remove blank spaces')"
+     onkeypress="setCustomValidity('')" required>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-25">
+					<label for="lname">LAST NAME *</label>
+				</div>
+				<div class="col-75">
+					<input @keydown.space.prevent type="text" class="text-center" th:field="*{lastName}" placeholder="Employee's Last Name.."
+						oninput="this.value = this.value.toUpperCase()" pattern="[A-Za-z]+" oninvalid="setCustomValidity('Please remove blank spaces')"
+     onkeypress="setCustomValidity('')" required>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-25">
+					<label for="uname">USERNAME *</label>
+				</div>
+				<div class="col-75">
+					<input type="text" class="text-center" readonly th:field="*{userName}" placeholder="UserName.."
+						oninput="this.value = this.value.toLowerCase()" required>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-25">
+					<label for="passw">PASSWORD *</label>
+				</div>
+				<div class="col-75">
+					<input type="text" class="text-center" th:field="*{password}" oninvalid="setCustomValidity('Please remove blank spaces')"
+     onkeypress="setCustomValidity('')" required>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-25">
+					<label for="doj">DATE OF JOINING *</label>
+				</div>
+				<div class="col-25">
+					<input type="date" class="text-center" readonly th:value="*{dateOfJoining}"
+						th:field="*{dateOfJoining}" required>
+				</div>
+				<div class="col-25">
+					<label for="departmentId">DEPARTMENT NAME *</label>
+				</div>
+				<div class="col-25">
+					<input type="text" class="text-center" readonly th:field="*{departmentName}" required>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="dob">DATE OF BIRTH *</label>
+				</div>
+				<div class="col-25">
+					<input type="date" class="text-center" th:value="*{dateOfBirth}" th:field="*{dateOfBirth}"  required>
+				</div>
+				<!-- <div class="col-25">
+        <label for="departmentId">NEW DEPARTMENT ID *</label>
+      </div>
+      <div class="col-25">
+<select name="departments" class="text-center" id="language" onChange="update()">
+							<option th:each="departments :${departments}"
+								th:text="${departments.deptId}">
+					</select>  
+   <input type="text" id="value" hidden>
+		<input type="text" id="text" th:field="*{departmentId}" hidden>
+      </div>
+		<script type="text/javascript">
+			function update() {
+				var select = document.getElementById('language');
+				var option = select.options[select.selectedIndex];
+
+				document.getElementById('value').value = option.value;
+				document.getElementById('text').value = option.text;
+			}
+
+			update();
+		</script>      
+-->
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="gen">GENDER *</label>
+				</div>
+				<div class="col-75">
+					<select name="gen" class="text-center" th:field="*{gender}"
+						oninput="this.value = this.value.toUpperCase()" required>
+						<option value="MALE">MALE</option>
+						<option value="FEMALE">FEMALE</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-25">
+					<label for="role">ROLE *</label>
+				</div>
+				<div class="col-75">
+					<select name="role" class="text-center" readonly th:field="*{role}" placeholder="Enter Role"
+						oninput="this.value = this.value.toUpperCase()" required>
+						<option value="EMPLOYEE">EMPLOYEE</option>
+						<option value="ADMIN">ADMIN</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="row">
+
+			</div>
+
+
+
+			<div class="row">
+
+			</div>
+
+
+
+
+			<br>
+			<div class="row text-center">
+				<button type="submit" class="button" >UPDATE EMPLOYEE</button>
+			</div>
+
+		</form>
+		<!-- Bootstrap -->
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+			integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+			crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+			integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+			crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+			integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+			crossorigin="anonymous"></script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$('#fileImage').change(function () {
+					showImageThumbnail(this)
+				});
+
+			});
+			function showImageThumbnail(fileInput) {
+				file = fileInput.files[0];
+				reader = new FileReader();
+				reader.onload = function (e) {
+					$('#thumbnail').attr('src', e.target.result);
+				};
+				reader.readAsDataURL(file);
+			}
+			function myFun() {
+				alert("Updated Succesfully!");
+			}
+
+		</script>
+		
+		
+	</div>
+
+
+</body>
+
+</html>
