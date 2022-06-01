@@ -50,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Timestamp;
 import java.util.*;
 
 import ltts.ems.com.model.Attendance;
@@ -86,6 +87,24 @@ public class EmployeeController {
 
 
 	 private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	 
+	 public String folderAddressGen() throws IOException{
+		 String path = System.getProperty("user.home")+"/Desktop/EmployeeManagementFolder";
+		 File Dir = new File(path);
+		 if(!Dir.exists()){
+			 if(Dir.mkdir()){
+				 System.out.println("Folder has been created successfully");
+				 }
+			 else {
+				 System.out.println("Folder failed to be created");
+			 }
+		 }
+		 else {
+			 System.out.println("Folder already exist");
+		 }
+		 Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
+		 return System.getProperty("user.home")+"/Desktop/EmployeeManagementFolder/("+timestamp1+")";
+	 }
 	
 	// =======================================
 	// ==========ADMIN PAGES==================
@@ -244,7 +263,7 @@ public class EmployeeController {
 		
 		contentStream.stroke();
 		contentStream.close();
-		String fileName = "EmployeeList-"+Location+".pdf";
+		String fileName =folderAddressGen()+"EmployeeList-"+Location+".pdf";
 		document.save(fileName);
 		document.close();
 		System.out.println("CreatedPDF succesfully");
@@ -271,7 +290,7 @@ public class EmployeeController {
 			}
 		}
 			  XWPFDocument document = new XWPFDocument();
-			  String fileName = "EmployeeList-"+Location+".docx";
+			  String fileName = folderAddressGen()+"EmployeeList-"+Location+".docx";
 		      FileOutputStream out = new FileOutputStream(new File(fileName));
 		      XWPFParagraph paragraph = document.createParagraph();
 		      XWPFRun run = paragraph.createRun();
@@ -369,7 +388,7 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    
-	    String fileName = "EmployeeList-"+Location+".xlsx";
+	    String fileName = folderAddressGen()+ "EmployeeList-"+Location+".xlsx";
 	    FileOutputStream fileOut = new FileOutputStream(fileName);
 	    workbook.write(fileOut);
 	    fileOut.close();
@@ -502,7 +521,7 @@ public class EmployeeController {
 		
 		contentStream.stroke();
 		contentStream.close();
-		document.save("EmployeeList.pdf");
+		document.save(folderAddressGen()+"EmployeeList.pdf");
 		document.close();
 		System.out.println("CreatedPDF succesfully");
 		
@@ -523,7 +542,7 @@ public class EmployeeController {
 		System.out.print("\n Trying the docx");
 		//try {
 			  XWPFDocument document = new XWPFDocument();
-		      FileOutputStream out = new FileOutputStream(new File("EmployeeList.docx"));
+		      FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"EmployeeList.docx"));
 		      XWPFParagraph paragraph = document.createParagraph();
 		      XWPFRun run = paragraph.createRun();
 		      run.setBold(true);
@@ -612,7 +631,7 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    
-	    FileOutputStream fileOut = new FileOutputStream("EmployeeList.xlsx");
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"EmployeeList.xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
@@ -878,7 +897,7 @@ public class EmployeeController {
 		//generating the document and closing tool
 		contentStream.stroke();
 		contentStream.close();
-		document.save("DepartmentList.pdf");
+		document.save(folderAddressGen()+"DepartmentList.pdf");
 		document.close();
 		System.out.println("DepartmentList PDF written successfully");
 		
@@ -892,7 +911,7 @@ public class EmployeeController {
 		
 		//Setting the tools being used to create this document
 		XWPFDocument document = new XWPFDocument();
-	    FileOutputStream out = new FileOutputStream(new File("DepartmentList.docx"));
+	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"DepartmentList.docx"));
 	    
 	    //Generating the header of this document
 	    XWPFParagraph paragraph = document.createParagraph();
@@ -964,7 +983,7 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    //closing the tools and generating file with information
-	    FileOutputStream fileOut = new FileOutputStream("DepartmentList.xlsx");
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"DepartmentList.xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
@@ -1120,7 +1139,7 @@ public class EmployeeController {
 		//generating the document and closing tool
 		contentStream.stroke();
 		contentStream.close();
-		document.save("AdminAttendanceList.pdf");
+		document.save(folderAddressGen()+"AdminAttendanceList.pdf");
 		document.close();
 		System.out.println("Admin attendance list PDF written successfully");
 		
@@ -1134,7 +1153,7 @@ public class EmployeeController {
 		
 		//Setting the tools being used to create this document
 		XWPFDocument document = new XWPFDocument();
-	    FileOutputStream out = new FileOutputStream(new File("AdminAttendanceList.docx"));
+	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"AdminAttendanceList.docx"));
 	    
 	    //Generating the header of this document
 	    XWPFParagraph paragraph = document.createParagraph();
@@ -1174,7 +1193,6 @@ public class EmployeeController {
 	    System.out.println("Admin attendance list docx written successfully");
 		return "AdminViewAllAttendanceRequests";
 	}
-	
 	@GetMapping("/Admin/ViewAttendanceRequests/XLSX")
 
 	public String xlsxGenAdminAttendanceList(Model model) throws IOException{
@@ -1218,7 +1236,7 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    //closing the tools and generating file with information
-	    FileOutputStream fileOut = new FileOutputStream("AdminAttendanceList.xlsx");
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"AdminAttendanceList.xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
@@ -1448,7 +1466,7 @@ public class EmployeeController {
 		//generating the document and closing tool
 		contentStream.stroke();
 		contentStream.close();
-		String fileName = "Employee-"+String.valueOf(id)+"-AttendanceList.pdf";
+		String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.pdf";
 		document.save(fileName);
 		document.close();
 		System.out.println("Admin attendance list PDF written successfully");
