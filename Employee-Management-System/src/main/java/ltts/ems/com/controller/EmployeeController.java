@@ -103,7 +103,7 @@ public class EmployeeController {
 			 System.out.println("Folder already exist");
 		 }
 		 Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
-		 return System.getProperty("user.home")+"/Desktop/EmployeeManagementFolder/("+timestamp1+")";
+		 return System.getProperty("user.home")+"/Desktop/EmployeeManagementFolder/("+timestamp1+")-";
 	 }
 	
 	// =======================================
@@ -268,7 +268,7 @@ public class EmployeeController {
 		document.close();
 		System.out.println("CreatedPDF succesfully");
 		
-		return "AdminDashboard";
+		return "redirect:/Admin/AdminDashboard";
 	}
 
 	@GetMapping("/Admin/AdminDashboard/{Location}/DOCX")
@@ -328,7 +328,7 @@ public class EmployeeController {
 		      out.close();
 		      document.close();
 		      System.out.println("createparagraph.docx written successfully");
-		return "AdminDashboard";
+		return "redirect:/Admin/AdminDashboard";
 	}
 	
 	@GetMapping("/Admin/AdminDashboard/{Location}/XLSX")
@@ -393,7 +393,7 @@ public class EmployeeController {
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
-		return "AdminDashboard";
+		return "redirect:/Admin/AdminDashboard";
 		
 	}
 	
@@ -525,7 +525,7 @@ public class EmployeeController {
 		document.close();
 		System.out.println("CreatedPDF succesfully");
 		
-		return "AdminDashboard";
+		return "redirect:/Admin/AdminDashboard";
 	}
 
 	@GetMapping("/Admin/AdminDashboard/DOCX")
@@ -579,7 +579,7 @@ public class EmployeeController {
 		      out.close();
 		      document.close();
 		      System.out.println("createparagraph.docx written successfully");
-		return "AdminDashboard";
+		return "redirect:/Admin/AdminDashboard";
 	}
 	
 	@GetMapping("/Admin/AdminDashboard/XLSX")
@@ -635,7 +635,7 @@ public class EmployeeController {
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
-		return "AdminDashboard";
+		return "redirect:/Admin/AdminDashboard";
 		
 	}
 	/**
@@ -833,6 +833,190 @@ public class EmployeeController {
 		return "redirect:/Admin/AdminDashboard";
 	}
 
+
+	@GetMapping("/Admin/ViewDepartmentList/{Location}/PDF")
+	public String pdfGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
+
+		List<Department> departments= departmentservice.getAllDepartments();
+		model.addAttribute("departments",departments);
+		for(int k=0;k<departments.size();k++) {
+			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
+			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
+				System.out.println("->Here");
+				departments.remove(k);
+				k-=1;
+			}
+		}
+		
+		//Setting the tools being used to create this document
+		PDDocument document = new PDDocument();
+		PDPage firstPage = new PDPage();
+		
+		//generating tools to use in table
+		document.addPage(firstPage);
+		int pageHeight = (int) firstPage.getTrimBox().getHeight();
+		PDPageContentStream contentStream = new PDPageContentStream(document, firstPage);
+		contentStream.setStrokingColor(Color.DARK_GRAY);
+		contentStream.setLineWidth(1);
+		int initX = 50;
+		int initY = pageHeight-50;
+		int cellHeight = 30;
+		int cellWidth = 100;
+		int colCount = 3;
+		int rowCount = departments.size();
+		
+		//Adding all table elements
+		for(int i = 0; i<=rowCount;i++) {
+			for(int j = 0; j<colCount; j++) {
+				contentStream.addRect(initX, initY, cellWidth, -cellHeight);
+				contentStream.beginText();
+				contentStream.newLineAtOffset(initX+2, initY-cellHeight+10);
+				contentStream.setFont(PDType1Font.TIMES_ROMAN,8);
+				if(i==0) {
+					//contentStream.setNonStrokingColor(Color.BLUE);
+					if(j==0) {
+						contentStream.showText(" Department ID");
+					}
+					else if(j==1) {
+						contentStream.showText(" Department Name");
+					}
+					else if(j==2) {
+						contentStream.showText(" Location");
+					}
+				}
+				else{
+					contentStream.setNonStrokingColor(Color.BLUE);
+					if(j==0) {
+						contentStream.showText("  "+String.valueOf(departments.get(i-1).getDeptId()));
+					}
+					else if(j==1) {
+						contentStream.showText("  "+departments.get(i-1).getDeptName());
+					}
+					else if(j==2) {
+						contentStream.showText("  "+departments.get(i-1).getLocation());
+					}
+				}
+				contentStream.endText();
+					initX+=cellWidth;
+			}
+			initX=50;
+			initY-=cellHeight;
+		}
+		
+		//generating the document and closing tool
+		contentStream.stroke();
+		contentStream.close();
+		document.save(folderAddressGen()+Location+"-DepartmentList.pdf");
+		document.close();
+		System.out.println("DepartmentList PDF written successfully");
+		
+		return "redirect:/Admin/ViewDepartmentList";
+	}
+	@GetMapping("/Admin/ViewDepartmentList/{Location}/DOCX")
+
+	public String docxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
+		List<Department> departments= departmentservice.getAllDepartments();
+		model.addAttribute("departments",departments);
+		for(int k=0;k<departments.size();k++) {
+			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
+			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
+				System.out.println("->Here");
+				departments.remove(k);
+				k-=1;
+			}
+		}
+		//Setting the tools being used to create this document
+		XWPFDocument document = new XWPFDocument();
+	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+Location+"-DepartmentList.docx"));
+	    
+	    //Generating the header of this document
+	    XWPFParagraph paragraph = document.createParagraph();
+	    XWPFRun run = paragraph.createRun();
+	    run.setBold(true);
+	    run.setFontSize(30);
+	    run.setText("\t \t \t Department List");
+	    
+	    //Generating the table
+	    //create table
+	    XWPFTable table = document.createTable();
+	    //create first row
+	    XWPFTableRow tableRowOne = table.getRow(0);
+	    tableRowOne.getCell(0).setText("Department ID");
+	    tableRowOne.addNewTableCell().setText("Department Name");
+	    tableRowOne.addNewTableCell().setText("Location");
+
+	    int i = 0;
+	    while(i<departments.size()) {
+	    	  XWPFTableRow tableRowTwo = table.createRow();
+		      tableRowTwo.getCell(0).setText(String.valueOf(departments.get(i).getDeptId()));
+		      tableRowTwo.getCell(1).setText(departments.get(i).getDeptName()+" ");
+		      tableRowTwo.getCell(2).setText(departments.get(i).getLocation()+" ");
+		      i+=1;
+	    }
+	    
+	    //Closing the document 
+		document.write(out);
+	    out.close();
+	    document.close();
+	    System.out.println("DepartmentList docx written successfully");
+		return "redirect:/Admin/ViewDepartmentList";
+	}
+	
+	@GetMapping("/Admin/ViewDepartmentList/{Location}/XLSX")
+
+	public String xlsxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
+		List<Department> departments= departmentservice.getAllDepartments();
+		model.addAttribute("departments",departments);
+		for(int k=0;k<departments.size();k++) {
+			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
+			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
+				System.out.println("->Here");
+				departments.remove(k);
+				k-=1;
+			}
+		}
+		
+		//Setting the tools being used to create this document
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Contacts");
+		Font headerFont = workbook.createFont();
+		
+		//Setting the header the document
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 14);
+		headerFont.setColor(IndexedColors.RED.getIndex());
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setFont(headerFont);
+		Row headerRow = sheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Department ID");
+		headerRow.createCell(1).setCellValue("Department Name");
+		headerRow.createCell(2).setCellValue("Location");
+		
+		//Listing all the data elements
+		int i = 0;
+	    while(i<departments.size()) {
+	    	Row newRow = sheet.createRow(i+1);
+	    	  newRow.createCell(0).setCellValue(String.valueOf(departments.get(i).getDeptId()));
+	    	  newRow.createCell(1).setCellValue(departments.get(i).getDeptName());
+	    	  newRow.createCell(2).setCellValue(departments.get(i).getLocation());
+		      i+=1;
+	      }
+	    //resizing all the columns to fit data
+	    int col  = 3;
+	    for ( i = 0; i <= 3; i++) {
+	    	  sheet.autoSizeColumn(i);
+	    }
+	    //closing the tools and generating file with information
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+Location+"-DepartmentList.xlsx");
+	    workbook.write(fileOut);
+	    fileOut.close();
+	    workbook.close();
+	    System.out.println("DepartmentList XLSX written successfully");
+		return "redirect:/Admin/ViewDepartmentList";
+		
+	}
+	
+
 	@GetMapping("/Admin/ViewDepartmentList/PDF")
 	public String pdfGenDepartmentList(Model model) throws IOException{
 
@@ -901,7 +1085,7 @@ public class EmployeeController {
 		document.close();
 		System.out.println("DepartmentList PDF written successfully");
 		
-		return "AdminViewAllDepartments";
+		return "redirect:/Admin/ViewDepartmentList";
 	}
 	@GetMapping("/Admin/ViewDepartmentList/DOCX")
 
@@ -943,7 +1127,7 @@ public class EmployeeController {
 	    out.close();
 	    document.close();
 	    System.out.println("DepartmentList docx written successfully");
-		return "AdminViewAllDepartments";
+		return "redirect:/Admin/ViewDepartmentList";
 	}
 	
 	@GetMapping("/Admin/ViewDepartmentList/XLSX")
@@ -988,7 +1172,7 @@ public class EmployeeController {
 	    fileOut.close();
 	    workbook.close();
 	    System.out.println("DepartmentList XLSX written successfully");
-		return "AdminViewAllDepartments";
+		return "redirect:/Admin/ViewDepartmentList";
 		
 	}
 	
@@ -1143,7 +1327,7 @@ public class EmployeeController {
 		document.close();
 		System.out.println("Admin attendance list PDF written successfully");
 		
-		return "AdminViewAllAttendanceRequests";
+		return "redirect:/Admin/ViewAttendanceRequests";
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/DOCX")
 
@@ -1191,7 +1375,7 @@ public class EmployeeController {
 	    out.close();
 	    document.close();
 	    System.out.println("Admin attendance list docx written successfully");
-		return "AdminViewAllAttendanceRequests";
+		return "redirect:/Admin/ViewAttendanceRequests";
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/XLSX")
 
@@ -1241,7 +1425,7 @@ public class EmployeeController {
 	    fileOut.close();
 	    workbook.close();
 	    System.out.println("Admin attendance list XLSX written successfully");
-		return "AdminViewAllAttendanceRequests";
+		return "redirect:/Admin/ViewAttendanceRequests";
 		
 	}
 	
@@ -1471,7 +1655,8 @@ public class EmployeeController {
 		document.close();
 		System.out.println("Admin attendance list PDF written successfully");
 		
-		return "EmployeeViewAllAttendance";
+		String ret ="redirect:/Employee/"+String.valueOf(id)+"/EmployeeAttendanceRequests";
+		return ret;
 	}
 	@GetMapping("/Employee/{id}/EmployeeAttendanceRequests/DOCX")
 
@@ -1483,7 +1668,7 @@ public class EmployeeController {
 		
 		//Setting the tools being used to create this document
 		XWPFDocument document = new XWPFDocument();
-		String fileName = "Employee-"+String.valueOf(id)+"-AttendanceList.docx";
+		String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.docx";
 	    FileOutputStream out = new FileOutputStream(new File(fileName));
 	    
 	    //Generating the header of this document
@@ -1522,7 +1707,8 @@ public class EmployeeController {
 	    out.close();
 	    document.close();
 	    System.out.println("Admin attendance list docx written successfully");
-		return "EmployeeViewAllAttendance";
+	    String ret ="redirect:/Employee/"+String.valueOf(id)+"/EmployeeAttendanceRequests";
+		return ret;
 	}
 	
 	@GetMapping("/Employee/{id}/EmployeeAttendanceRequests/XLSX")
@@ -1570,13 +1756,14 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    //closing the tools and generating file with information
-	    String fileName = "Employee-"+String.valueOf(id)+"-AttendanceList.xlsx";
+	    String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.xlsx";
 	    FileOutputStream fileOut = new FileOutputStream(fileName);
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
 	    System.out.println("Admin attendance list XLSX written successfully");
-		return "EmployeeViewAllAttendance";
+	    String ret ="redirect:/Employee/"+String.valueOf(id)+"/EmployeeAttendanceRequests";
+		return ret;
 		
 	}
 	
