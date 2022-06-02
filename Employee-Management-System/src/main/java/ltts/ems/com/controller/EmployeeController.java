@@ -1858,6 +1858,210 @@ public class EmployeeController {
 		return "redirect:/Employee/" + employee.getEmpId() + "/Dashboard";
 	}
 
+	@GetMapping("/Admin/ViewAttendanceRequests/{id}/PDF")
+	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
+		EmployeeDetails employee = employeeservice.getEmployeeById(id);
+		model.addAttribute("employee", employee);
+		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
+		model.addAttribute("attendances", attendance);
+		
+		
+		//Setting the tools being used to create this document
+		PDDocument document = new PDDocument();
+		PDPage firstPage = new PDPage();
+		
+		//generating tools to use in table
+		document.addPage(firstPage);
+		int pageHeight = (int) firstPage.getTrimBox().getHeight();
+		PDPageContentStream contentStream = new PDPageContentStream(document, firstPage);
+		contentStream.setStrokingColor(Color.DARK_GRAY);
+		contentStream.setLineWidth(1);
+		int initX = 50;
+		int initY = pageHeight-50;
+		int cellHeight = 30;
+		int cellWidth = 100;
+		int colCount = 6;
+		int rowCount = attendance.size();
+		
+		//Adding all table elements
+		for(int i = 0; i<=rowCount;i++) {
+			for(int j = 0; j<colCount; j++) {
+				if((j==0)||(j==1)) {
+					contentStream.addRect(initX, initY, 60, -cellHeight);
+				}
+				else {
+					contentStream.addRect(initX, initY, cellWidth, -cellHeight);
+				}
+				contentStream.beginText();
+				contentStream.newLineAtOffset(initX+2, initY-cellHeight+10);
+				contentStream.setFont(PDType1Font.TIMES_ROMAN,8);
+				if(i==0) {
+					//contentStream.setNonStrokingColor(Color.BLUE);
+					if(j==0) {
+						contentStream.showText(" Attendance ID");
+					}
+					else if(j==1) {
+						contentStream.showText(" Employee ID");
+					}
+					else if(j==2) {
+						contentStream.showText(" Employee Name");
+					}
+					else if(j==3) {
+						contentStream.showText(" In Time");
+					}
+					else if(j==4) {
+						contentStream.showText(" Out Time");
+					}
+					else if(j==5) {
+						contentStream.showText(" Status");
+					}
+				}
+				else{
+					contentStream.setNonStrokingColor(Color.BLUE);
+					if(j==0) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getAttId()));
+					}
+					else if(j==1) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getEmpId()));
+					}
+					else if(j==2) {
+						contentStream.showText("  "+attendance.get(i-1).getFirstName() + " " + attendance.get(i-1).getLastName());
+					}
+					else if(j==3) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getInTime()));
+					}
+					else if(j==4) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getOutTime()));
+					}
+					else if(j==5) {
+						contentStream.showText(attendance.get(i-1).getStatus());
+					}
+				}
+				contentStream.endText();
+				if((j==0)||(j==1)) {
+					initX+=60;
+				}
+				else {
+					initX+=cellWidth;
+				}
+			}
+			initX=50;
+			initY-=cellHeight;
+		}
+		
+		//generating the document and closing tool
+		contentStream.stroke();
+		contentStream.close();
+		String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.pdf";
+		document.save(fileName);
+		document.close();
+		System.out.println("Admin attendance list PDF written successfully");
+		return "redirect:/Admin/ViewAttendanceRequests";
+	}
+	@GetMapping("/Admin/ViewAttendanceRequests/{id}/DOCX")
 
+	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id, Model model) throws IOException{
+		EmployeeDetails employee = employeeservice.getEmployeeById(id);
+		model.addAttribute("employee", employee);
+		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
+		model.addAttribute("attendances", attendance);
+		
+		//Setting the tools being used to create this document
+		XWPFDocument document = new XWPFDocument();
+		String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.docx";
+	    FileOutputStream out = new FileOutputStream(new File(fileName));
+	    
+	    //Generating the header of this document
+	    XWPFParagraph paragraph = document.createParagraph();
+	    XWPFRun run = paragraph.createRun();
+	    run.setBold(true);
+	    run.setFontSize(30);
+	    run.setText("\t \t \t Department List");
+	    
+	    //Generating the table
+	    //create table
+	    XWPFTable table = document.createTable();
+	    //create first row
+	    XWPFTableRow tableRowOne = table.getRow(0);
+	    tableRowOne.getCell(0).setText("Attendance ID");
+	    tableRowOne.addNewTableCell().setText("Employee ID");
+	    tableRowOne.addNewTableCell().setText("Employee Name");
+	    tableRowOne.addNewTableCell().setText("In Time");
+	    tableRowOne.addNewTableCell().setText("Out Time");
+	    tableRowOne.addNewTableCell().setText("Status");
+	    
+	    int i = 0;
+	    while(i<attendance.size()) {
+	    	  XWPFTableRow tableRowTwo = table.createRow();
+		      tableRowTwo.getCell(0).setText(String.valueOf(attendance.get(i).getAttId()));
+		      tableRowTwo.getCell(1).setText(String.valueOf(attendance.get(i).getEmpId()));
+		      tableRowTwo.getCell(2).setText(attendance.get(i).getFirstName() + " " + attendance.get(i).getLastName());
+	    	  tableRowTwo.getCell(3).setText(String.valueOf(attendance.get(i).getInTime()));
+	    	  tableRowTwo.getCell(4).setText(String.valueOf(attendance.get(i).getOutTime()));
+	    	  tableRowTwo.getCell(5).setText(attendance.get(i).getStatus());
+		      i+=1;
+	    }
+	    
+	    //Closing the document 
+		document.write(out);
+	    out.close();
+	    document.close();
+	    System.out.println("Admin attendance list docx written successfully");
+		return "redirect:/Admin/ViewAttendanceRequests";
+	}
+	@GetMapping("/Admin/ViewAttendanceRequests/{id}/XLSX")
+
+	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
+		EmployeeDetails employee = employeeservice.getEmployeeById(id);
+		model.addAttribute("employee", employee);
+		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
+		model.addAttribute("attendances", attendance);
+		
+		//Setting the tools being used to create this document
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Contacts");
+		Font headerFont = workbook.createFont();
+		
+		//Setting the header the document
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 14);
+		headerFont.setColor(IndexedColors.RED.getIndex());
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setFont(headerFont);
+		Row headerRow = sheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Attendance ID");
+		headerRow.createCell(1).setCellValue("Employee ID");
+		headerRow.createCell(2).setCellValue("Employee Name");
+		headerRow.createCell(3).setCellValue("In Time");
+		headerRow.createCell(4).setCellValue("Out Time");
+		headerRow.createCell(5).setCellValue("Status");
+		
+		//Listing all the data elements
+		int i = 0;
+	    while(i<attendance.size()) {
+	    	Row newRow = sheet.createRow(i+1);
+	    	  newRow.createCell(0).setCellValue(String.valueOf(attendance.get(i).getAttId()));
+	    	  newRow.createCell(1).setCellValue(String.valueOf(attendance.get(i).getEmpId()));
+	    	  newRow.createCell(2).setCellValue(attendance.get(i).getFirstName() + " " + attendance.get(i).getLastName());
+	    	  newRow.createCell(3).setCellValue(String.valueOf(attendance.get(i).getInTime()));
+	    	  newRow.createCell(4).setCellValue(String.valueOf(attendance.get(i).getOutTime()));
+	    	  newRow.createCell(2).setCellValue(String.valueOf(attendance.get(i).getStatus()));
+		      i+=1;
+	      }
+	    //resizing all the columns to fit data
+	    int col  = 6;
+	    for ( i = 0; i <= col; i++) {
+	    	  sheet.autoSizeColumn(i);
+	    }
+	    //closing the tools and generating file with information
+	    String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.xlsx";
+	    FileOutputStream fileOut = new FileOutputStream(fileName);
+	    workbook.write(fileOut);
+	    fileOut.close();
+	    workbook.close();
+	    System.out.println("Admin attendance list XLSX written successfully");
+		return "redirect:/Admin/ViewAttendanceRequests";
+		
+	}
 
 }
