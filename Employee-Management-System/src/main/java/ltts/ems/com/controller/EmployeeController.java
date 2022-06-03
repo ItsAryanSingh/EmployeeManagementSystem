@@ -1858,8 +1858,20 @@ public class EmployeeController {
 		return "redirect:/Employee/" + employee.getEmpId() + "/Dashboard";
 	}
 
-	@GetMapping("/Admin/ViewAttendanceRequests/{id}/PDF")
-	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
+	@GetMapping("/Admin/ViewAttendanceRequests/{Name}/PDF")
+	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "Name") String Name,Model model) throws IOException{
+		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
+		int id=0;
+		for(int i = 0;i<listEmployees.size();i++) {
+			System.out.println("This");
+			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
+			System.out.println(Name.toUpperCase());
+			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
+				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
+				break;
+			}
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -1958,9 +1970,21 @@ public class EmployeeController {
 		System.out.println("Admin attendance list PDF written successfully");
 		return "redirect:/Admin/ViewAttendanceRequests";
 	}
-	@GetMapping("/Admin/ViewAttendanceRequests/{id}/DOCX")
+	@GetMapping("/Admin/ViewAttendanceRequests/Name/DOCX")
 
-	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id, Model model) throws IOException{
+	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "Name") String Name, Model model) throws IOException{
+		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
+		int id=0;
+		for(int i = 0;i<listEmployees.size();i++) {
+			System.out.println("This");
+			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
+			System.out.println(Name.toUpperCase());
+			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
+				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
+				break;
+			}
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2009,9 +2033,22 @@ public class EmployeeController {
 	    System.out.println("Admin attendance list docx written successfully");
 		return "redirect:/Admin/ViewAttendanceRequests";
 	}
-	@GetMapping("/Admin/ViewAttendanceRequests/{id}/XLSX")
+	@GetMapping("/Admin/ViewAttendanceRequests/{Name}/XLSX")
 
-	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
+	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "Name") String Name,Model model) throws IOException{
+		//model.addAttribute("listEmployees", employeeservice.getAllEmployees());
+		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
+		int id=0;
+		for(int i = 0;i<listEmployees.size();i++) {
+			System.out.println("This");
+			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
+			System.out.println(Name.toUpperCase());
+			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
+				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
+				break;
+			}
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
