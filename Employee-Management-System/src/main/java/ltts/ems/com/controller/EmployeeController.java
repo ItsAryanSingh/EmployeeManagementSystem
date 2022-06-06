@@ -1,4 +1,7 @@
+
+   
 package ltts.ems.com.controller;
+
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -51,6 +54,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import ltts.ems.com.model.Attendance;
@@ -84,6 +88,7 @@ public class EmployeeController {
 	DepartmentService departmentservice;
 	@Autowired
 	DepartmentRepository dp;
+	
 
 
 	 private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -102,8 +107,11 @@ public class EmployeeController {
 		 else {
 			 System.out.println("Folder already exist");
 		 }
-		 Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
-		 return System.getProperty("user.home")+"/Desktop/EmployeeManagementFolder/("+timestamp1+")-";
+			/*
+			 * Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
+			 */	
+		 Timestamp timestamp1=new Timestamp(System.currentTimeMillis());
+		 return System.getProperty("user.home")+"/Desktop/EmployeeManagementFolder/";
 	 }
 	
 	// =======================================
@@ -132,7 +140,84 @@ public class EmployeeController {
 	}
 	
 	
-	@GetMapping("/Admin/AdminDashboard/{Location}/PDF")
+	
+	
+	/**
+	 * Admin side page -- Admin Dashboard Page
+	 * @param pageNo To display the group of records from the database on the particular page number
+	 * @param model Contains attributes for employees list & page navigation accordingly
+	 * @return the group of existing records on that particular page number
+	 * @throws JRException 
+	 * @throws FileNotFoundException 
+	 */
+
+
+	@GetMapping("/Admin/AdminDashboard/LIST/{pageNo}")
+	public String findPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) {
+
+		int pageSize = 4;
+		
+		System.out.println("ADMIN DASHBOARD PAGE -- VIEW ALL EMPLOYEES LIST");	
+
+		Page<EmployeeDetails> page = employeeservice.findPaginated(pageNo, pageSize);
+		List<EmployeeDetails> listEmployees = page.getContent();
+
+		model.addAttribute("currentPage", pageNo);
+		model.addAttribute("totalPages", page.getTotalPages());
+		model.addAttribute("totalItems", page.getTotalElements());
+	    model.addAttribute("listEmployees", listEmployees);
+		System.out.println("ADMIN DASHBOARD PAGE -- VIEW ALL EMPLOYEES LIST");		
+		logger.error("Admin dashboard page is presented");
+		return "AdminDashboard";
+		
+	}
+	
+
+
+	
+	
+	
+	
+	@GetMapping("/Admin/GenerateReport-1")
+	public String generateReport(Model model) {
+		
+		List<Department> departments= departmentservice.getAllDepartments();
+		model.addAttribute("departments",departments);
+		return "Admin-DashboardReport";
+	
+	}
+	
+
+	@GetMapping("/Admin/GenerateReport-2")
+	public String generateReport2(Model model) {
+		
+		List<EmployeeDetails> empDetails= employeeservice.getAllEmployees();
+		model.addAttribute("empDetails",empDetails);
+		return "Admin-AttendanceReport";
+	
+	}
+	
+	
+	
+	@GetMapping("/Admin/GenerateReport-3")
+	public String generateReport3(Model model) {
+		
+		List<Department> departments= departmentservice.getAllDepartments();
+		model.addAttribute("departments",departments);
+		return "Admin-DepartmentsReport";
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@GetMapping("/Admin/AdminDashboard/PDF/{Location}")
 
 	public String pdfGenEmployeeListSpecific(Model model,@PathVariable(value = "Location") String Location) throws IOException{
 
@@ -263,7 +348,8 @@ public class EmployeeController {
 		
 		contentStream.stroke();
 		contentStream.close();
-		String fileName =folderAddressGen()+"EmployeeList-"+Location+".pdf";
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+		String fileName =folderAddressGen()+"EmployeeList-"+Location+"-"+fileSuffix+".pdf";
 		document.save(fileName);
 		document.close();
 		System.out.println("CreatedPDF succesfully");
@@ -271,7 +357,7 @@ public class EmployeeController {
 		return "redirect:/Admin/AdminDashboard";
 	}
 
-	@GetMapping("/Admin/AdminDashboard/{Location}/DOCX")
+	@GetMapping("/Admin/AdminDashboard/DOCX/{Location}")
 
 	public String docxGenEmployeeList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
 
@@ -290,7 +376,8 @@ public class EmployeeController {
 			}
 		}
 			  XWPFDocument document = new XWPFDocument();
-			  String fileName = folderAddressGen()+"EmployeeList-"+Location+".docx";
+			  String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+			  String fileName = folderAddressGen()+"EmployeeList-"+Location+"-"+fileSuffix+".docx";
 		      FileOutputStream out = new FileOutputStream(new File(fileName));
 		      XWPFParagraph paragraph = document.createParagraph();
 		      XWPFRun run = paragraph.createRun();
@@ -331,7 +418,7 @@ public class EmployeeController {
 		return "redirect:/Admin/AdminDashboard";
 	}
 	
-	@GetMapping("/Admin/AdminDashboard/{Location}/XLSX")
+	@GetMapping("/Admin/AdminDashboard/XLSX/{Location}")
 
 	public String xlsxGenEmployeeList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
 		// shows employee repository
@@ -387,8 +474,8 @@ public class EmployeeController {
 	    for ( i = 0; i <= 7; i++) {
 	    	  sheet.autoSizeColumn(i);
 	    }
-	    
-	    String fileName = folderAddressGen()+ "EmployeeList-"+Location+".xlsx";
+		  String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    String fileName = folderAddressGen()+ "EmployeeList-"+Location+"-"+fileSuffix+".xlsx";
 	    FileOutputStream fileOut = new FileOutputStream(fileName);
 	    workbook.write(fileOut);
 	    fileOut.close();
@@ -521,7 +608,9 @@ public class EmployeeController {
 		
 		contentStream.stroke();
 		contentStream.close();
-		document.save(folderAddressGen()+"EmployeeList.pdf");
+		  String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+
+		document.save(folderAddressGen()+"EmployeeList-"+fileSuffix+".pdf");
 		document.close();
 		System.out.println("CreatedPDF succesfully");
 		
@@ -542,7 +631,11 @@ public class EmployeeController {
 		System.out.print("\n Trying the docx");
 		//try {
 			  XWPFDocument document = new XWPFDocument();
-		      FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"EmployeeList.docx"));
+			  Timestamp timestamp1=new Timestamp(System.currentTimeMillis());
+			  String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+
+			  String fileName=folderAddressGen()+"EmployeeList-"+fileSuffix+".docx";
+		      FileOutputStream out = new FileOutputStream(new File(fileName));
 		      XWPFParagraph paragraph = document.createParagraph();
 		      XWPFRun run = paragraph.createRun();
 		      run.setBold(true);
@@ -630,45 +723,19 @@ public class EmployeeController {
 	    for ( i = 0; i <= 7; i++) {
 	    	  sheet.autoSizeColumn(i);
 	    }
-	    
-	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"EmployeeList.xlsx");
+		  String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"EmployeeList-"+fileSuffix+".xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
 		return "redirect:/Admin/AdminDashboard";
 		
 	}
-	/**
-	 * Admin side page -- Admin Dashboard Page
-	 * @param pageNo To display the group of records from the database on the particular page number
-	 * @param model Contains attributes for employees list & page navigation accordingly
-	 * @return the group of existing records on that particular page number
-	 * @throws JRException 
-	 * @throws FileNotFoundException 
-	 */
-
-
-	@GetMapping("/Admin/AdminDashboard/LIST/{pageNo}")
-	public String findPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) throws JRException, FileNotFoundException {
-
-		int pageSize = 4;
-		
-		System.out.println("ADMIN DASHBOARD PAGE -- VIEW ALL EMPLOYEES LIST");	
-
-		Page<EmployeeDetails> page = employeeservice.findPaginated(pageNo, pageSize);
-		//List<EmployeeDetails> listEmployees = page.getContent();
-
-		model.addAttribute("currentPage", pageNo);
-		model.addAttribute("totalPages", page.getTotalPages());
-		model.addAttribute("totalItems", page.getTotalElements());
-		System.out.println("ADMIN DASHBOARD PAGE -- VIEW ALL EMPLOYEES LIST");		
-		logger.error("Admin dashboard page is presented");
-		return "AdminDashboard";
-		
-	}
 	
-
-
+	
+	
+	
+	
 	/**
 	 * Admin side page -- Add new employee page
 	 * Display form for adding new employee records
@@ -703,7 +770,7 @@ public class EmployeeController {
 
 	@PostMapping("/saveEmployee")
 	public String saveEmployee(@ModelAttribute("employee") EmployeeDetails employee,
-			@RequestParam("fileImage)") MultipartFile multipartFile,Model model) throws IOException 
+			@RequestParam("fileImage") MultipartFile multipartFile,Model model) throws IOException 
 	{
 
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
@@ -834,7 +901,7 @@ public class EmployeeController {
 	}
 
 
-	@GetMapping("/Admin/ViewDepartmentList/{Location}/PDF")
+	@GetMapping("/Admin/ViewDepartmentList/PDF/{Location}")
 	public String pdfGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
 
 		List<Department> departments= departmentservice.getAllDepartments();
@@ -906,13 +973,14 @@ public class EmployeeController {
 		//generating the document and closing tool
 		contentStream.stroke();
 		contentStream.close();
-		document.save(folderAddressGen()+Location+"-DepartmentList.pdf");
+        String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+		document.save(folderAddressGen()+Location+"-DepartmentList-"+fileSuffix+".pdf");
 		document.close();
 		System.out.println("DepartmentList PDF written successfully");
 		
 		return "redirect:/Admin/ViewDepartmentList";
 	}
-	@GetMapping("/Admin/ViewDepartmentList/{Location}/DOCX")
+	@GetMapping("/Admin/ViewDepartmentList/DOCX/{Location}")
 
 	public String docxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
 		List<Department> departments= departmentservice.getAllDepartments();
@@ -927,7 +995,8 @@ public class EmployeeController {
 		}
 		//Setting the tools being used to create this document
 		XWPFDocument document = new XWPFDocument();
-	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+Location+"-DepartmentList.docx"));
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+Location+"-DepartmentList-"+fileSuffix+".docx"));
 	    
 	    //Generating the header of this document
 	    XWPFParagraph paragraph = document.createParagraph();
@@ -962,7 +1031,7 @@ public class EmployeeController {
 		return "redirect:/Admin/ViewDepartmentList";
 	}
 	
-	@GetMapping("/Admin/ViewDepartmentList/{Location}/XLSX")
+	@GetMapping("/Admin/ViewDepartmentList/XLSX/{Location}")
 
 	public String xlsxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
 		List<Department> departments= departmentservice.getAllDepartments();
@@ -1007,7 +1076,8 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    //closing the tools and generating file with information
-	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+Location+"-DepartmentList.xlsx");
+        String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+Location+"-DepartmentList-"+fileSuffix+".xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
@@ -1081,7 +1151,8 @@ public class EmployeeController {
 		//generating the document and closing tool
 		contentStream.stroke();
 		contentStream.close();
-		document.save(folderAddressGen()+"DepartmentList.pdf");
+        String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+		document.save(folderAddressGen()+"DepartmentList-"+fileSuffix+".pdf");
 		document.close();
 		System.out.println("DepartmentList PDF written successfully");
 		
@@ -1095,7 +1166,8 @@ public class EmployeeController {
 		
 		//Setting the tools being used to create this document
 		XWPFDocument document = new XWPFDocument();
-	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"DepartmentList.docx"));
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"DepartmentList-"+fileSuffix+".docx"));
 	    
 	    //Generating the header of this document
 	    XWPFParagraph paragraph = document.createParagraph();
@@ -1167,7 +1239,8 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    //closing the tools and generating file with information
-	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"DepartmentList.xlsx");
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"DepartmentList-"+fileSuffix+".xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
@@ -1323,7 +1396,8 @@ public class EmployeeController {
 		//generating the document and closing tool
 		contentStream.stroke();
 		contentStream.close();
-		document.save(folderAddressGen()+"AdminAttendanceList.pdf");
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+		document.save(folderAddressGen()+"AdminAttendanceList-"+fileSuffix+".pdf");
 		document.close();
 		System.out.println("Admin attendance list PDF written successfully");
 		
@@ -1337,7 +1411,8 @@ public class EmployeeController {
 		
 		//Setting the tools being used to create this document
 		XWPFDocument document = new XWPFDocument();
-	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"AdminAttendanceList.docx"));
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream out = new FileOutputStream(new File(folderAddressGen()+"AdminAttendanceList-"+fileSuffix+".docx"));
 	    
 	    //Generating the header of this document
 	    XWPFParagraph paragraph = document.createParagraph();
@@ -1420,7 +1495,8 @@ public class EmployeeController {
 	    	  sheet.autoSizeColumn(i);
 	    }
 	    //closing the tools and generating file with information
-	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"AdminAttendanceList.xlsx");
+		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+	    FileOutputStream fileOut = new FileOutputStream(folderAddressGen()+"AdminAttendanceList-"+fileSuffix+".xlsx");
 	    workbook.write(fileOut);
 	    fileOut.close();
 	    workbook.close();
@@ -1429,7 +1505,253 @@ public class EmployeeController {
 		
 	}
 	
+	
+	
+	@GetMapping("/Admin/ViewAttendanceRequests/PDF/{Name}")
+	public String pdfGenEmployeeAttendanceListForAdmiByName(@PathVariable(value = "Name") String Name,Model model, Model modelnew) throws IOException{
+		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
+		int id=0;
+		for(int i = 0;i<listEmployees.size();i++) {
+			System.out.println("This");
+			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
+			System.out.println(Name.toUpperCase());
+			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
+				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
+				break;
+			}
+		}
+		EmployeeDetails employee = employeeservice.getEmployeeById(id);
+		model.addAttribute("employee", employee);
+		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
+		modelnew.addAttribute("attendances", attendance);
+		
+		
+		//Setting the tools being used to create this document
+		PDDocument document = new PDDocument();
+		PDPage firstPage = new PDPage();
+		
+		//generating tools to use in table
+		document.addPage(firstPage);
+		int pageHeight = (int) firstPage.getTrimBox().getHeight();
+		PDPageContentStream contentStream = new PDPageContentStream(document, firstPage);
+		contentStream.setStrokingColor(Color.DARK_GRAY);
+		contentStream.setLineWidth(1);
+		int initX = 50;
+		int initY = pageHeight-50;
+		int cellHeight = 30;
+		int cellWidth = 100;
+		int colCount = 6;
+		int rowCount = attendance.size();
+		
+		//Adding all table elements
+		for(int i = 0; i<=rowCount;i++) {
+			for(int j = 0; j<colCount; j++) {
+				if((j==0)||(j==1)) {
+					contentStream.addRect(initX, initY, 60, -cellHeight);
+				}
+				else {
+					contentStream.addRect(initX, initY, cellWidth, -cellHeight);
+				}
+				contentStream.beginText();
+				contentStream.newLineAtOffset(initX+2, initY-cellHeight+10);
+				contentStream.setFont(PDType1Font.TIMES_ROMAN,8);
+				if(i==0) {
+					//contentStream.setNonStrokingColor(Color.BLUE);
+					if(j==0) {
+						contentStream.showText(" Attendance ID");
+					}
+					else if(j==1) {
+						contentStream.showText(" Employee ID");
+					}
+					else if(j==2) {
+						contentStream.showText(" Employee Name");
+					}
+					else if(j==3) {
+						contentStream.showText(" In Time");
+					}
+					else if(j==4) {
+						contentStream.showText(" Out Time");
+					}
+					else if(j==5) {
+						contentStream.showText(" Status");
+					}
+				}
+				else{
+					contentStream.setNonStrokingColor(Color.BLUE);
+					if(j==0) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getAttId()));
+					}
+					else if(j==1) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getEmpId()));
+					}
+					else if(j==2) {
+						contentStream.showText("  "+attendance.get(i-1).getFirstName() + " " + attendance.get(i-1).getLastName());
+					}
+					else if(j==3) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getInTime()));
+					}
+					else if(j==4) {
+						contentStream.showText("  "+String.valueOf(attendance.get(i-1).getOutTime()));
+					}
+					else if(j==5) {
+						contentStream.showText(attendance.get(i-1).getStatus());
+					}
+				}
+				contentStream.endText();
+				if((j==0)||(j==1)) {
+					initX+=60;
+				}
+				else {
+					initX+=cellWidth;
+				}
+			}
+			initX=50;
+			initY-=cellHeight;
+		}
+		
+		//generating the document and closing tool
+		contentStream.stroke();
+		contentStream.close();
+		String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.pdf";
+		document.save(fileName);
+		document.close();
+		System.out.println("Admin attendance list PDF written successfully");
+		return "redirect:/Admin/ViewAttendanceRequests";
+	}
+	@GetMapping("/Admin/ViewAttendanceRequests/DOCX/{Name}")
 
+	public String docxGenEmployeeAttendanceListForAdminByName(@PathVariable(value = "Name") String Name, Model model) throws IOException{
+		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
+		int id=0;
+		for(int i = 0;i<listEmployees.size();i++) {
+			System.out.println("This");
+			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
+			System.out.println(Name.toUpperCase());
+			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
+				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
+				break;
+			}
+		}
+		EmployeeDetails employee = employeeservice.getEmployeeById(id);
+		model.addAttribute("employee", employee);
+		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
+		model.addAttribute("attendances", attendance);
+		
+		//Setting the tools being used to create this document
+		XWPFDocument document = new XWPFDocument();
+		String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.docx";
+	    FileOutputStream out = new FileOutputStream(new File(fileName));
+	    
+	    //Generating the header of this document
+	    XWPFParagraph paragraph = document.createParagraph();
+	    XWPFRun run = paragraph.createRun();
+	    run.setBold(true);
+	    run.setFontSize(30);
+	    run.setText("\t \t \t Department List");
+	    
+	    //Generating the table
+	    //create table
+	    XWPFTable table = document.createTable();
+	    //create first row
+	    XWPFTableRow tableRowOne = table.getRow(0);
+	    tableRowOne.getCell(0).setText("Attendance ID");
+	    tableRowOne.addNewTableCell().setText("Employee ID");
+	    tableRowOne.addNewTableCell().setText("Employee Name");
+	    tableRowOne.addNewTableCell().setText("In Time");
+	    tableRowOne.addNewTableCell().setText("Out Time");
+	    tableRowOne.addNewTableCell().setText("Status");
+	    
+	    int i = 0;
+	    while(i<attendance.size()) {
+	    	  XWPFTableRow tableRowTwo = table.createRow();
+		      tableRowTwo.getCell(0).setText(String.valueOf(attendance.get(i).getAttId()));
+		      tableRowTwo.getCell(1).setText(String.valueOf(attendance.get(i).getEmpId()));
+		      tableRowTwo.getCell(2).setText(attendance.get(i).getFirstName() + " " + attendance.get(i).getLastName());
+	    	  tableRowTwo.getCell(3).setText(String.valueOf(attendance.get(i).getInTime()));
+	    	  tableRowTwo.getCell(4).setText(String.valueOf(attendance.get(i).getOutTime()));
+	    	  tableRowTwo.getCell(5).setText(attendance.get(i).getStatus());
+		      i+=1;
+	    }
+	    
+	    //Closing the document 
+		document.write(out);
+	    out.close();
+	    document.close();
+	    System.out.println("Admin attendance list docx written successfully");
+		return "redirect:/Admin/ViewAttendanceRequests";
+	}
+	@GetMapping("/Admin/ViewAttendanceRequests/XLSX/{Name}")
+
+	public String xlsxGenEmployeeAttendanceListForAdminByName(@PathVariable(value = "Name") String Name,Model model) throws IOException{
+		//model.addAttribute("listEmployees", employeeservice.getAllEmployees());
+		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
+		int id=0;
+		for(int i = 0;i<listEmployees.size();i++) {
+			System.out.println("This");
+			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
+			System.out.println(Name.toUpperCase());
+			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
+				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
+				break;
+			}
+		}
+		EmployeeDetails employee = employeeservice.getEmployeeById(id);
+		model.addAttribute("employee", employee);
+		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
+		model.addAttribute("attendances", attendance);
+		
+		//Setting the tools being used to create this document
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Contacts");
+		Font headerFont = workbook.createFont();
+		
+		//Setting the header the document
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 14);
+		headerFont.setColor(IndexedColors.RED.getIndex());
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setFont(headerFont);
+		Row headerRow = sheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Attendance ID");
+		headerRow.createCell(1).setCellValue("Employee ID");
+		headerRow.createCell(2).setCellValue("Employee Name");
+		headerRow.createCell(3).setCellValue("In Time");
+		headerRow.createCell(4).setCellValue("Out Time");
+		headerRow.createCell(5).setCellValue("Status");
+		
+		//Listing all the data elements
+		int i = 0;
+	    while(i<attendance.size()) {
+	    	Row newRow = sheet.createRow(i+1);
+	    	  newRow.createCell(0).setCellValue(String.valueOf(attendance.get(i).getAttId()));
+	    	  newRow.createCell(1).setCellValue(String.valueOf(attendance.get(i).getEmpId()));
+	    	  newRow.createCell(2).setCellValue(attendance.get(i).getFirstName() + " " + attendance.get(i).getLastName());
+	    	  newRow.createCell(3).setCellValue(String.valueOf(attendance.get(i).getInTime()));
+	    	  newRow.createCell(4).setCellValue(String.valueOf(attendance.get(i).getOutTime()));
+	    	  newRow.createCell(2).setCellValue(String.valueOf(attendance.get(i).getStatus()));
+		      i+=1;
+	      }
+	    //resizing all the columns to fit data
+	    int col  = 6;
+	    for ( i = 0; i <= col; i++) {
+	    	  sheet.autoSizeColumn(i);
+	    }
+	    //closing the tools and generating file with information
+	    String fileName = folderAddressGen()+"Employee-"+String.valueOf(id)+"-AttendanceList.xlsx";
+	    FileOutputStream fileOut = new FileOutputStream(fileName);
+	    workbook.write(fileOut);
+	    fileOut.close();
+	    workbook.close();
+	    System.out.println("Admin attendance list XLSX written successfully");
+		return "redirect:/Admin/ViewAttendanceRequests";
+		
+	}
+	
+	
+	
 	
 
 	/**
@@ -1858,20 +2180,8 @@ public class EmployeeController {
 		return "redirect:/Employee/" + employee.getEmpId() + "/Dashboard";
 	}
 
-	@GetMapping("/Admin/ViewAttendanceRequests/{Name}/PDF")
-	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "Name") String Name,Model model) throws IOException{
-		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
-		int id=0;
-		for(int i = 0;i<listEmployees.size();i++) {
-			System.out.println("This");
-			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
-			System.out.println(Name.toUpperCase());
-			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
-				id = listEmployees.get(i).getEmpId();
-				System.out.println("Here");
-				break;
-			}
-		}
+	@GetMapping("/Admin/ViewAttendanceRequests/{id}/PDF")
+	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -1970,21 +2280,9 @@ public class EmployeeController {
 		System.out.println("Admin attendance list PDF written successfully");
 		return "redirect:/Admin/ViewAttendanceRequests";
 	}
-	@GetMapping("/Admin/ViewAttendanceRequests/Name/DOCX")
+	@GetMapping("/Admin/ViewAttendanceRequests/{id}/DOCX")
 
-	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "Name") String Name, Model model) throws IOException{
-		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
-		int id=0;
-		for(int i = 0;i<listEmployees.size();i++) {
-			System.out.println("This");
-			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
-			System.out.println(Name.toUpperCase());
-			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
-				id = listEmployees.get(i).getEmpId();
-				System.out.println("Here");
-				break;
-			}
-		}
+	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id, Model model) throws IOException{
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2033,22 +2331,9 @@ public class EmployeeController {
 	    System.out.println("Admin attendance list docx written successfully");
 		return "redirect:/Admin/ViewAttendanceRequests";
 	}
-	@GetMapping("/Admin/ViewAttendanceRequests/{Name}/XLSX")
+	@GetMapping("/Admin/ViewAttendanceRequests/{id}/XLSX")
 
-	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "Name") String Name,Model model) throws IOException{
-		//model.addAttribute("listEmployees", employeeservice.getAllEmployees());
-		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
-		int id=0;
-		for(int i = 0;i<listEmployees.size();i++) {
-			System.out.println("This");
-			System.out.println(listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName());
-			System.out.println(Name.toUpperCase());
-			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
-				id = listEmployees.get(i).getEmpId();
-				System.out.println("Here");
-				break;
-			}
-		}
+	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);

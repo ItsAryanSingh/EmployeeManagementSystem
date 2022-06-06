@@ -273,6 +273,75 @@
 			-ms-filter: blur(2px);
 			filter: blur(2px);
 		}
+		
+		.dropdown-content {display: block;}	
+	.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+}
+
+.dropdown-content ,select:hover {
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+	
+	
+		.dropbtn {
+  background-color:transparent;
+  color: white;
+	padding: 16px 16px;
+  font-size: large;
+  border: none;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+
+}
+
+.dropbtn:hover,.dropdown-content:hover{
+	border-radius: 10px;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display:contents;
+  text-decoration:none;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+	display:none;
+  border:2px solid black;
+  border-radius:10px;
+  background-color:lightcyan;
+  
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  width:max-content;
+  
+    text-decoration:none;
+
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover { background-color:transparent;
+ }
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display:unset;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color:lightgreen; color:black;}
+		
+		
+		ul{
+			text-decoration:none;
+		}
+		
 	</style>
 
 
@@ -290,7 +359,20 @@
 			<a th:href="AddEmployee">ADD EMPLOYEE</a>
 			<a th:href="@{/Admin/ViewAttendanceRequests}">ATTENDANCE</a>
 			<a href="/Admin/AddDepartment">DEPARTMENTS</a>
+			  <div class="dropdown">
+  <button class="dropbtn">GENERATE REPORT</button>
+  <div class="dropdown-content">
+   <li style="list-style-type:none;"> <a href="/Admin/GenerateReport-1">Employee Report</a></li>
+   <li style="list-style-type:none;"> <a href="/Admin/GenerateReport-2">Attendance Report</a></li>
+   <li style="list-style-type:none;"><a href="/Admin/GenerateReport-3">Department Report</a></li>
+  </div>
+</div>
+	
+			
 			<a href="/LoginPage" style="float:right;">LOGOUT</a>
+
+
+
 
 		</div><br>
 		<div class="heading">ADD DEPARTMENT</div>
