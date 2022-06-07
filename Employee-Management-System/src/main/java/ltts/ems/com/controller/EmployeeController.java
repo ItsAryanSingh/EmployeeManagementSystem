@@ -192,6 +192,29 @@ public class EmployeeController {
 	public String generateReport2(Model model) {
 		
 		List<EmployeeDetails> empDetails= employeeservice.getAllEmployees();
+		//Arrays.sort(empDetails, new empdetails.NameComparator());
+	    //Example Array To sort...
+	     for (int i = 0; i < empDetails.size(); i++) 
+	     {      //Loop over java Array  outer Loop use
+	         for (int j = i + 1; j < empDetails.size(); j++) 
+	         {  // Loop over java array
+	             //int tmp = 0;                            //tempraory variable in order to compare.
+	        	 System.out.println("\n HERE");
+	             if (empDetails.get(i).getFirstName().compareTo(empDetails.get(j).getFirstName())>0) 
+	             {          //compare outer loop object with inner loop 
+	            	 System.out.print(empDetails);
+	            	 System.out.println("\n>>>>>>>>>>>>>>>>>>\n");
+	            	 EmployeeDetails tmp = empDetails.get(i);               // if greater than swapping.
+	            	 EmployeeDetails tmp2 = empDetails.get(j);   
+	       
+	            	 empDetails.add(i, tmp2);
+	            	 empDetails.remove(i+1);
+	            	 empDetails.add(j, tmp);
+	            	 empDetails.remove(j+1);
+	            	 System.out.print(empDetails);
+	             }
+	         }
+	     }
 		model.addAttribute("empDetails",empDetails);
 		return "Admin-AttendanceReport";
 	
