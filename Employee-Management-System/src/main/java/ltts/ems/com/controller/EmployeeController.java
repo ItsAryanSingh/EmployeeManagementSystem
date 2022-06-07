@@ -368,7 +368,6 @@ public class EmployeeController {
 			initX=50;
 			initY-=cellHeight;
 		}
-		
 		contentStream.stroke();
 		contentStream.close();
 		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
