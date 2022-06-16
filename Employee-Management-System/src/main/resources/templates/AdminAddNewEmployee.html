@@ -417,7 +417,7 @@
 			<br>
 
 			<div class="row">
-				<button type="submit" class="button text-center" onClick="showMessage()">SAVE EMPLOYEE</button>
+				<button type="submit" class="button text-center" onclick="popup()">SAVE EMPLOYEE</button>
 			</div>
 			<br><br>
 		</form>
@@ -449,9 +449,10 @@
 				};
 				reader.readAsDataURL(file);
 			}
-			function showMessage() {
-                alert("Saving employee, given no error in credentials");
-            }
+			
+			function popup() {
+			alert("New record added successfully !");
+		}
 
 		</script>
 

@@ -246,6 +246,9 @@
 			text-decoration:none;
 		}
 		
+		.hide {
+  display: none;
+}
 		
 	</style>
 
@@ -253,7 +256,7 @@
 
 </head>
 
-<body background="https://www.softwaresuggest.com/blog/wp-content/uploads/2019/12/8-Surefire-Steps-to-Handle-Employee-Attendance-Issues.png" onload="removeduplicate(),updatenew()">
+<body background="https://www.softwaresuggest.com/blog/wp-content/uploads/2019/12/8-Surefire-Steps-to-Handle-Employee-Attendance-Issues.png" onload="removeduplicate(),optionFirst(),update()">
 	<div class="topnav">
 
 		<a class="active" th:href="@{/Admin/AdminDashboard}">HOME</a>
@@ -277,40 +280,59 @@
 
 	</div>
 
-	<form action="#" class="former" th:action="@{/SaveAttendanceDashboard}" method="POST">
+
+	<form action="#" class="former" th:action="@{/SaveAttendanceDashboard}" method="POST" >
 
 		
-		<div class="form-group ">
+		<div class="form-group " >
 			<label class="text-mute pr-3" for="employee-name">
 				<b>GENERATE REPORT FOR EMPLOYEE ATTENDANCE </b></label>
 				
 				<br><br>
-				<input type="radio" id="html" name="reporttypes" value="HTML" onchange="SetVisible(0);" checked>
+				<input type="radio" id="html" name="reporttypes" value="1" onclick="changeContent1();" checked>
   <label for="html">ALL EMPLOYEES</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="radio" id="html" name="reporttypes" value="HTML" onchange="SetVisible(1);" >
+<input type="radio" id="html" name="reporttypes" value="2" onclick="changeContent2();" >
   <label for="html">SELECT EMPLOYEE NAME</label>
 				<br><br>
 				
 				
+				<script type="text/javascript">
+				
+				function optionFirst() {
+  document.getElementById("locationname").classList.remove("hide");
+  document.getElementById("languagenew").classList.add("hide");
+}
+				
+				function changeContent1() {
+  document.getElementById("locationname").classList.remove("hide");
+  document.getElementById("languagenew").classList.add("hide");
+}
+
+function changeContent2() {
+  document.getElementById("locationname").classList.add("hide");
+  document.getElementById("languagenew").classList.remove("hide");
+}
+				
+				</script>
 				
 				
-				<div class="reportone" id="locationname" >
+				
+				<div class="reportone hide" id="locationname" >
 			
 					
-					<label class="text-mute pr-3" for="employee-name" >
+					<label class="text-mute pr-3" for="employee-name"  >
 				<b>SELECT FILE TYPE</b>
 			</label>
-					<select class="select" name="listEmployees" id="reportty" onChange="" >
-		
+					<select class="select" name="listEmployees" id="reportty" onChange="updatehere()">
 		<option value="DOCX">DOCX</option>
-	        <option value="PDF" selected>PDF</option>
+	        <option value="PDF"selected>PDF</option>
 	        <option value="XLSX">XLSX</option>
 		</select >
 					
-					<input type="text" id="value3" hidden>
+					<input type="text" id="value3" hidden >
 					
 					<script type="text/javascript">
-						function updatenew() {
+						function updatehere() {
 							var select = document.getElementById('reportty');
 							var option = select.options[select.selectedIndex];
 
@@ -318,44 +340,53 @@
 							document.getElementById('text').value = option.text;
 							
 						}
+						
 
-						update();
+						updatehere();
 					</script>
 	    			
     	<br><br>
-	    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick=popup()>
+	    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick="location.href='/Admin/ViewAttendanceRequests/'+ document.getElementById('value3').value;showMessage();">
 
 	    	</div>
 	    	
 	    	
 	    	
 	    	
-		<div class="reporttwo" id="languagenew" style="display: none;">
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+
+	    	
+		<div class="reporttwo hide" id="languagenew">
 			<label class="text-mute pr-3" for="employee-name" >
 				<b>SELECT EMPLOYEE NAME</b>
 			</label>
 		
 		
-		<select class="select" name="empDetails" id="language" onload="updatevalue()" >
+		<select class="select" name="empDetails" id="language" onChange="updatenew()">
 		
 		<option th:each="empDetails:${empDetails}" th:text="${empDetails.firstName+empDetails.lastName}">
 		</select >
 		<br>
-		<input type="text" id="value" hidden>
+		<input type="text" id="value" hidden >
 			<br>		
 					
 					<script type="text/javascript">
-						function updatevalue() {
+						function updatenew() {
 							var select = document.getElementById('language');
 							var option = select.options[select.selectedIndex];
+
 							document.getElementById('value').value = option.value;
-							document.getElementById('text').value = option.text;		
+							document.getElementById('text').value = option.text;
+							
 						}
-						function popup() {
-							alert("File saved on your desktop in the employee management system folder");
-							location.href='/Admin/ViewAttendanceRequests/'+ document.getElementById('value3').value;
-						}
-						update();
+						
+
+						updatenew();
 					</script>
 					
 					<label class="text-mute pr-3" for="employee-name" >
@@ -397,8 +428,15 @@
 
 }
 </script>
+
+<script type="text/javascript">
+            function showMessage() {
+                alert("File saved successfully at EmployeeManagementFolder on Desktop !");
+            }
+        </script>
+
     	<br><br>
-    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick="popup()">
+    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick="location.href='/Admin/ViewAttendanceRequests/'+ document.getElementById('value2').value +'/'+ document.getElementById('value').value;showMessage();">
 
 <!--a class="btn" onclick = "this.href='/Admin/AdminDashboard/DOCX'">DOCX</a>
 <a class="btn" onclick = "this.href='/Admin/AdminDashboard/PDF/' ">PDF</a>
@@ -424,10 +462,7 @@
 		function myFun() {
 			alert("Sent for regularisation.");
 		}
-		function popup() {
-			alert("File saved on your desktop in the employee management system folder");
-			location.href='/Admin/ViewAttendanceRequests/'+ document.getElementById('value2').value +'/'+ document.getElementById('value').value;
-		}
+		
 	</script>
 </body>
 

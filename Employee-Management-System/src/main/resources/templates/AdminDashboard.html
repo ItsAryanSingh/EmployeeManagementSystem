@@ -1,3 +1,5 @@
+
+   
 <html>
 
 <head xmlns:th="http://www.thymeleaf.org">
@@ -398,7 +400,7 @@
 
 
 
-	<table id="myTable" class="styled-table ">
+	<table id="myTable" class="styled-table">
 		<thead>
 			<tr>
 				<th scope="col">EMP ID</th>
@@ -435,7 +437,7 @@
 						alt="EMPLOYEE PHOTO" /></td>
 				<td bgcolor="skyblue"> <a th:href="@{/Admin/{id}/UpdateEmployee(id=${employee.empId})}"
 						class="button">UPDATE</a><br><br>
-					<a th:href="@{/DeleteEmployee/{id}(id=${employee.empId})}" class="button-delete">DELETE
+					<a th:href="@{/DeleteEmployee/{id}(id=${employee.empId})}" class="button-delete" onclick=popup()>DELETE
 				</td>
 
 
@@ -467,6 +469,10 @@
 					}
 				}
 			}
+		}
+		
+		function popup() {
+			alert("Record deleleted successfully !");
 		}</script>
 
 </body>

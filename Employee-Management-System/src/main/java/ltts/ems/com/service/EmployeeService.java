@@ -1,3 +1,5 @@
+
+   
 package ltts.ems.com.service;
 
 import java.util.List;
@@ -19,6 +21,10 @@ public interface EmployeeService {
 	 */
 	List<EmployeeDetails> getAllEmployees();
 
+	
+	
+	
+
 	/**
 	 * Method to implement pagination feature
 	 * @param pageNo Contains page number value
@@ -26,7 +32,7 @@ public interface EmployeeService {
 	 * @return List of existing employees
 	 */
 	Page<EmployeeDetails> findPaginated(int pageNo,int pageSize);
-	
+
 	/**
 	 * Method to save employee details
 	 * @param employee Contains details of the employee 

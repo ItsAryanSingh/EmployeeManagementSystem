@@ -246,7 +246,9 @@
 			text-decoration:none;
 		}
 		
-		
+		.hide {
+  display: none;
+}
 		
 	</style>
 
@@ -254,7 +256,7 @@
 
 </head>
 
-<body background="https://www.softwaresuggest.com/blog/wp-content/uploads/2019/12/8-Surefire-Steps-to-Handle-Employee-Attendance-Issues.png" onload="removeduplicate(),updatenew()">
+<body background="https://www.softwaresuggest.com/blog/wp-content/uploads/2019/12/8-Surefire-Steps-to-Handle-Employee-Attendance-Issues.png" onload="removeduplicate(),optionFirst(),update()">
 	<div class="topnav">
 
 		<a class="active" th:href="@{/Admin/AdminDashboard}">HOME</a>
@@ -284,22 +286,41 @@
 				<b>GENERATE REPORT FOR ALL DEPARTMENTS </b></label>
 				
 				<br><br>
-				<input type="radio" id="html" name="reporttypes" value="HTML" onchange="SetVisible(0);" checked>
+				<input type="radio" id="html" name="reporttypes" value="1" onclick="changeContent1();" checked>
   <label for="html">ALL DEPARTMENTS</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="radio" id="html" name="reporttypes" value="HTML" onchange="SetVisible(1);" >
+<input type="radio" id="html" name="reporttypes" value="2" onclick="changeContent2();" >
   <label for="html">SELECT LOCATION</label>
 				<br><br>
 				
 				
+					<script type="text/javascript">
+				
+				function optionFirst() {
+  document.getElementById("locationname").classList.remove("hide");
+  document.getElementById("languagenew").classList.add("hide");
+}
+				
+				function changeContent1() {
+  document.getElementById("locationname").classList.remove("hide");
+  document.getElementById("languagenew").classList.add("hide");
+}
+
+function changeContent2() {
+  document.getElementById("locationname").classList.add("hide");
+  document.getElementById("languagenew").classList.remove("hide");
+}
+				
+				</script>
 				
 				
-				<div class="reportone" id="locationname" >
+				
+				<div class="reportone hide" id="locationname" >
 			
 					
 					<label class="text-mute pr-3" for="employee-name" >
 				<b>SELECT FILE TYPE</b>
 			</label>
-					<select class="select" name="departments" id="reportty" onChange="" >
+					<select class="select" name="departments" id="reportty" onChange="updatehere()">
 		<option value="DOCX">DOCX</option>
 	        <option value="PDF" selected>PDF</option>
 	        <option value="XLSX">XLSX</option>
@@ -308,7 +329,7 @@
 					<input type="text" id="value3" hidden>
 					
 					<script type="text/javascript">
-						function updatenew() {
+						function updatehere() {
 							var select = document.getElementById('reportty');
 							var option = select.options[select.selectedIndex];
 
@@ -317,31 +338,31 @@
 							
 						}
 
-						update();
+						updatehere();
 					</script>
 	    			
     	<br><br>
     
-	    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick=popupALL()>
+	    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick="popup();location.href='/Admin/ViewDepartmentList/'+ document.getElementById('value3').value;">
 
 	    	</div>
 	    	
 	    	
 	    	
 	    	
-		<div class="reporttwo" id="languagenew" style="display: none;">
+		<div class="reporttwo hide" id="languagenew">
 			<label class="text-mute pr-3" for="employee-name" >
 				<b>SELECT LOCATION</b>
 			</label>
 		
 		
-		<select class="select" name="departments" id="language" onload="updatevalue()" >
+		<select class="select" name="departments" id="language" onChange="updatenew()" >
 		<option th:each="departments :${departments}" th:text="${departments.location}"></select >
 					
 					<input type="text" id="value" hidden>
 					
 					<script type="text/javascript">
-						function updatevalue() {
+						function updatenew() {
 							var select = document.getElementById('language');
 							var option = select.options[select.selectedIndex];
 
@@ -349,17 +370,17 @@
 							document.getElementById('text').value = option.text;
 							
 						}
-						function popupALL() {
+						function popup() {
 							alert("File saved on your desktop in the employee management system folder");
-							location.href='/Admin/ViewDepartmentList/'+ document.getElementById('value3').value;
 						}
-						update();
+
+						updatenew();
 					</script>
 					
 					<label class="text-mute pr-3" for="employee-name" >
 				<b>SELECT FILE TYPE</b>
 			</label>
-					<select class="select" name="departments" id="reporttype" onload="update()" >
+					<select class="select" name="departments" id="reporttype" onChange="update()" >
 		
 		<option value="DOCX">DOCX</option>
 	        <option value="PDF" selected>PDF</option>
@@ -396,7 +417,7 @@
 }
 </script>
     	<br><br>
-    	<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick=popupSpecific()>
+<input type="button" class="btn" name="generate" id="generate" value="GENERATE" onclick="popup(); location.href='/Admin/ViewDepartmentList/'+ document.getElementById('value2').value +'/'+ document.getElementById('value').value;">
 
 <!--<a class="btn" onclick = "this.href='/Admin/AdminDashboard/DOCX'">DOCX</a>
 <a class="btn" onclick = "this.href='/Admin/AdminDashboard/PDF/' ">PDF</a>
@@ -422,9 +443,8 @@
 		function myFun() {
 			alert("Sent for regularisation.");
 		}
-		function popupSpecific() {
+		function popup() {
 			alert("File saved on your desktop in the employee management system folder");
-			location.href='/Admin/ViewDepartmentList/'+ document.getElementById('value2').value +'/'+ document.getElementById('value').value;
 		}
 	</script>
 </body>
