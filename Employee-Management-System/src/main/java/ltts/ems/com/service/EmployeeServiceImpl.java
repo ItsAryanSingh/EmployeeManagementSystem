@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import ltts.ems.com.model.EmployeeDetails;
+import ltts.ems.com.repository.DepartmentRepository;
 import ltts.ems.com.repository.EmployeeRepository;
 
 @Service
@@ -15,6 +16,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	EmployeeRepository employeerepository;
+	
+	public EmployeeServiceImpl(EmployeeRepository employeerepositoryMock) {
+		//employeerepository = employeerepositoryMock;
+	}
 
 	@Override
 	public List<EmployeeDetails> getAllEmployees() {
@@ -37,13 +42,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public EmployeeDetails getEmployeeById(int id) {
-
-		return employeerepository.findById(id).get();
+		return employeerepository.getById(id);
 	}
 
 	@Override
 	public void deleteEmployeeById(int id) {
-
 		this.employeerepository.deleteById(id);
 
 	}

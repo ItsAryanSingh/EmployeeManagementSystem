@@ -13,6 +13,10 @@ public class DepartmentService {
 
 	@Autowired
 	DepartmentRepository departmentDao;
+	
+	public DepartmentService(DepartmentRepository departmentDaoMock) {
+	//	departmentDao  = departmentDaoMock;
+	}
 
 	/**
 	 * Method to save new department details

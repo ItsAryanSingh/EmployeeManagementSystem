@@ -13,6 +13,10 @@ public class AttendanceService  {
 
 	@Autowired
 	AttendanceRepository attendanceDao;
+	
+	public AttendanceService(AttendanceRepository attendanceDaoMock) {
+	//	this.attendanceDao = attendanceDaoMock;
+	}
 
 	/**
 	 * Method to save new attendance into the database
