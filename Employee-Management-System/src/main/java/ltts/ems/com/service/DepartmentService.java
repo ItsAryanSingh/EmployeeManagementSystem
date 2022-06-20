@@ -15,7 +15,7 @@ public class DepartmentService {
 	DepartmentRepository departmentDao;
 	
 	public DepartmentService(DepartmentRepository departmentDaoMock) {
-	//	departmentDao  = departmentDaoMock;
+		departmentDao  = departmentDaoMock;
 	}
 
 	/**

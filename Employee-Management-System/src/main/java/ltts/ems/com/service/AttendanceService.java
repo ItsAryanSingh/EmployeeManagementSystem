@@ -15,7 +15,7 @@ public class AttendanceService  {
 	AttendanceRepository attendanceDao;
 	
 	public AttendanceService(AttendanceRepository attendanceDaoMock) {
-	//	this.attendanceDao = attendanceDaoMock;
+		this.attendanceDao = attendanceDaoMock;
 	}
 
 	/**

@@ -18,7 +18,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	EmployeeRepository employeerepository;
 	
 	public EmployeeServiceImpl(EmployeeRepository employeerepositoryMock) {
-		//employeerepository = employeerepositoryMock;
+		employeerepository = employeerepositoryMock;
 	}
 
 	@Override

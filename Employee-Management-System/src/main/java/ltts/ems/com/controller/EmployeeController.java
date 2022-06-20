@@ -1,3 +1,5 @@
+
+   
 package ltts.ems.com.controller;
 
 
@@ -35,7 +37,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.Color;
@@ -64,8 +65,17 @@ import ltts.ems.com.repository.DepartmentRepository;
 import ltts.ems.com.service.AttendanceService;
 import ltts.ems.com.service.DepartmentService;
 import ltts.ems.com.service.EmployeeService;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 
-@RestController
+@Controller
 public class EmployeeController {
 
 	@Autowired
@@ -121,7 +131,7 @@ public class EmployeeController {
 
 	@GetMapping("/Admin/AdminDashboard")
 
-	public String viewHomePage(Model model) throws FileNotFoundException {
+	public String viewHomePage(Model model) throws FileNotFoundException, JRException {
 
 		// shows employee repository
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
@@ -182,7 +192,9 @@ public class EmployeeController {
 	public String generateReport2(Model model) {
 		
 		List<EmployeeDetails> empDetails= employeeservice.getAllEmployees();
-		for (int i = 0; i < empDetails.size(); i++) 
+		//Arrays.sort(empDetails, new empdetails.NameComparator());
+	    //Example Array To sort...
+	     for (int i = 0; i < empDetails.size(); i++) 
 	     {      //Loop over java Array  outer Loop use
 	         for (int j = i + 1; j < empDetails.size(); j++) 
 	         {  // Loop over java array
@@ -190,6 +202,8 @@ public class EmployeeController {
 	        	 System.out.println("\n HERE");
 	             if (empDetails.get(i).getFirstName().compareTo(empDetails.get(j).getFirstName())>0) 
 	             {          //compare outer loop object with inner loop 
+	            	 System.out.print(empDetails);
+	            	 System.out.println("\n>>>>>>>>>>>>>>>>>>\n");
 	            	 EmployeeDetails tmp = empDetails.get(i);               // if greater than swapping.
 	            	 EmployeeDetails tmp2 = empDetails.get(j);   
 	       
@@ -197,6 +211,7 @@ public class EmployeeController {
 	            	 empDetails.remove(i+1);
 	            	 empDetails.add(j, tmp);
 	            	 empDetails.remove(j+1);
+	            	 System.out.print(empDetails);
 	             }
 	         }
 	     }
@@ -353,7 +368,6 @@ public class EmployeeController {
 			initX=50;
 			initY-=cellHeight;
 		}
-		
 		contentStream.stroke();
 		contentStream.close();
 		String fileSuffix = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
@@ -917,6 +931,7 @@ public class EmployeeController {
 		for(int k=0;k<departments.size();k++) {
 			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
 			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
+				System.out.println("->Here");
 				departments.remove(k);
 				k-=1;
 			}
@@ -995,6 +1010,7 @@ public class EmployeeController {
 		for(int k=0;k<departments.size();k++) {
 			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
 			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
+				System.out.println("->Here");
 				departments.remove(k);
 				k-=1;
 			}
@@ -1045,6 +1061,7 @@ public class EmployeeController {
 		for(int k=0;k<departments.size();k++) {
 			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
 			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
+				System.out.println("->Here");
 				departments.remove(k);
 				k-=1;
 			}
@@ -1260,12 +1277,9 @@ public class EmployeeController {
 	 * Method to display the list of existing departments
 	 * @return list of existing departments in database
 	 */
-	@GetMapping("/Admin/ViewDepartmentLists")
 	private List<Department> getDepartments() {
-		System.out.println("\n\n \n\n\n$$$$$$$$$$$$$$$$>><<<<</////Here1");
-		//System.out.println(departmentservice.getAllDepartments());
+
 		return departmentservice.getAllDepartments();
-		//return "hi";
 	}
 
 
@@ -1275,7 +1289,6 @@ public class EmployeeController {
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		System.out.println("ADMIN SIDE VIEW ALL DEPARTMENTS PAGE");
-		System.out.println("\n\n \n\n\n$$$$$Here");
 		return "AdminViewAllDepartments";
 	}
 
@@ -1308,7 +1321,6 @@ public class EmployeeController {
 	@PostMapping("/SaveNewDepartment")
 	public String saveNewDepartment(@ModelAttribute("department") Department department) throws IOException
 	{
-		System.out.println(department);
 		dp.save(department);
 		return "redirect:/Admin/AdminDashboard";
 	}
@@ -1517,7 +1529,6 @@ public class EmployeeController {
 	
 	
 	
-	
 	@GetMapping("/Admin/ViewAttendanceRequests/PDF/{Name}")
 	public String pdfGenEmployeeAttendanceListForAdmiByName(@PathVariable(value = "Name") String Name,Model model, Model modelnew) throws IOException{
 		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
@@ -1528,6 +1539,7 @@ public class EmployeeController {
 			System.out.println(Name.toUpperCase());
 			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
 				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
 				break;
 			}
 		}
@@ -1640,6 +1652,7 @@ public class EmployeeController {
 			System.out.println(Name.toUpperCase());
 			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
 				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
 				break;
 			}
 		}
@@ -1703,6 +1716,7 @@ public class EmployeeController {
 			System.out.println(Name.toUpperCase());
 			if((listEmployees.get(i).getFirstName()+listEmployees.get(i).getLastName()).toUpperCase().equals(Name.toUpperCase())) {
 				id = listEmployees.get(i).getEmpId();
+				System.out.println("Here");
 				break;
 			}
 		}
