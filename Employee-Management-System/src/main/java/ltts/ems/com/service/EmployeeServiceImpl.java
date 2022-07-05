@@ -44,7 +44,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public EmployeeDetails getEmployeeById(int id) {
 		return employeerepository.getById(id);
 	}
-
+	@Override
+	public EmployeeDetails getEmployeeByUsername(String userName) {
+		return employeerepository.getUserByUserName(userName);
+	}
 	@Override
 	public void deleteEmployeeById(int id) {
 		this.employeerepository.deleteById(id);

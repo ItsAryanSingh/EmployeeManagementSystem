@@ -46,6 +46,8 @@ public interface EmployeeService {
 	 * @return Particular employee details using id
 	 */
 	EmployeeDetails getEmployeeById(int id);
+	
+	EmployeeDetails getEmployeeByUsername(String username);
 
 
 	/**

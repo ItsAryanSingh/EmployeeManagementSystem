@@ -18,6 +18,10 @@
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
+	<dependency>
+	 <groupId>org.springframework.boot</groupId>
+	 <artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
 	<!--Dependency to include JUnit 5 for testing-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -45,12 +49,6 @@
 			<scope>test</scope>
 		</dependency>
 		
-		
-		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports</artifactId>
-			<version>6.19.1</version>
-		</dependency>
 		
 		<dependency>
 		  <groupId>org.apache.pdfbox</groupId>
@@ -96,11 +94,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
 		<dependency>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-    <version>1.2.17</version>
-</dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+		    <version>1.2.17</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>

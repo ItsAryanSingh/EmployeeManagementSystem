@@ -1,8 +1,10 @@
 package ltts.ems.com.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,8 @@ public class LoginController {
 
 	@Autowired
 	EmployeeService emp;
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	String username;
 	String password;
 
@@ -43,14 +47,28 @@ public class LoginController {
 	@RequestMapping(value="LoginPage" , method=RequestMethod.POST)
 	public ModelAndView LoginAuth(HttpServletRequest request)
 	{
+		
 		username=request.getParameter("usrnm");
 		password=request.getParameter("psw");
-		EmployeeDetails theemployee=emp.findByUserNameAndPassword(username,password);
+		String expectedPassword = emp.getEmployeeByUsername(username).getPassword();
+		EmployeeDetails theemployee = null;
+		if(passwordEncoder.matches(password, expectedPassword)) {
+			theemployee=emp.findByUserNameAndPassword(username,expectedPassword);
+		}
 		if(theemployee==null)
 		{
 			return new ModelAndView("LoginError");
 		}
-		else if(theemployee.getRole().equals("ADMIN"))
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("empId", theemployee.getEmpId());
+		if(theemployee.getRole().equals("ADMIN")) {
+			session.setAttribute("isAdmin", true);
+		}
+		else {
+			session.setAttribute("isAdmin", false);
+		}
+		if(theemployee.getRole().equals("ADMIN"))
 		{
 			return new ModelAndView("redirect:/Admin/AdminDashboard");
 		}
@@ -71,19 +89,25 @@ public class LoginController {
 			return new ModelAndView("redirect:/LoginError");
 		}
 	}
+	
 
 	@RequestMapping("/Admin")
 	public ModelAndView mv(HttpServletRequest request)
 	{
 		username=request.getParameter("usrnm");
 		password=request.getParameter("psw");
-		EmployeeDetails theemployee=emp.findByUserNameAndPassword(username,password);
+		String expectedPassword = emp.getEmployeeByUsername(username).getPassword();
+		EmployeeDetails theemployee = null;
+		if(passwordEncoder.matches(password, expectedPassword)) {
+			theemployee=emp.findByUserNameAndPassword(username,expectedPassword);
+		}
 		return new ModelAndView("Admin/AdminDashboard/"+theemployee.getEmpId()+"{id}");
 	}
 
-	@RequestMapping("/Logout")
-	public ModelAndView mav()
-	{
+	@RequestMapping("/LogoutPage")
+	public ModelAndView mav(HttpServletRequest request)
+	{	
+		request.getSession().invalidate();
 		return new ModelAndView("redirect:/LoginPage");
 	}
 }

@@ -25,6 +25,9 @@ import org.slf4j.Logger;
 import java.util.List;
 //import org.springframework.stereotype.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,6 +50,7 @@ import java.io.IOException;
 //import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 //import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -65,15 +69,7 @@ import ltts.ems.com.repository.DepartmentRepository;
 import ltts.ems.com.service.AttendanceService;
 import ltts.ems.com.service.DepartmentService;
 import ltts.ems.com.service.EmployeeService;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
+
 
 @Controller
 public class EmployeeController {
@@ -88,6 +84,8 @@ public class EmployeeController {
 	DepartmentService departmentservice;
 	@Autowired
 	DepartmentRepository dp;
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 
 
@@ -117,6 +115,13 @@ public class EmployeeController {
 	// =======================================
 	// ==========ADMIN PAGES==================
 
+	public boolean sessionValidatorAdmin(HttpServletRequest request) {
+			HttpSession session = request.getSession();
+			if( session.getAttribute("empId") == null) {
+				return false;
+			}
+			return (boolean) session.getAttribute("isAdmin");
+		}
 
 	/**
 	 * Admin side page
@@ -131,9 +136,12 @@ public class EmployeeController {
 
 	@GetMapping("/Admin/AdminDashboard")
 
-	public String viewHomePage(Model model) throws FileNotFoundException, JRException {
+	public String viewHomePage(Model model,HttpServletRequest request) throws FileNotFoundException{
 
 		// shows employee repository
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
 		return findPaginated(1, model);
@@ -179,8 +187,10 @@ public class EmployeeController {
 	
 	
 	@GetMapping("/Admin/GenerateReport-1")
-	public String generateReport(Model model) {
-		
+	public String generateReport(Model model,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		return "Admin-DashboardReport";
@@ -189,7 +199,10 @@ public class EmployeeController {
 	
 
 	@GetMapping("/Admin/GenerateReport-2")
-	public String generateReport2(Model model) {
+	public String generateReport2(Model model,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		
 		List<EmployeeDetails> empDetails= employeeservice.getAllEmployees();
 		//Arrays.sort(empDetails, new empdetails.NameComparator());
@@ -223,8 +236,10 @@ public class EmployeeController {
 	
 	
 	@GetMapping("/Admin/GenerateReport-3")
-	public String generateReport3(Model model) {
-		
+	public String generateReport3(Model model,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		return "Admin-DepartmentsReport";
@@ -242,8 +257,10 @@ public class EmployeeController {
 	
 	@GetMapping("/Admin/AdminDashboard/PDF/{Location}")
 
-	public String pdfGenEmployeeListSpecific(Model model,@PathVariable(value = "Location") String Location) throws IOException{
-
+	public String pdfGenEmployeeListSpecific(Model model,@PathVariable(value = "Location") String Location,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// Generate employee List
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
@@ -381,8 +398,10 @@ public class EmployeeController {
 
 	@GetMapping("/Admin/AdminDashboard/DOCX/{Location}")
 
-	public String docxGenEmployeeList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
-
+	public String docxGenEmployeeList(Model model,@PathVariable(value = "Location") String Location,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// shows employee repository
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
@@ -442,7 +461,11 @@ public class EmployeeController {
 	
 	@GetMapping("/Admin/AdminDashboard/XLSX/{Location}")
 
-	public String xlsxGenEmployeeList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
+	public String xlsxGenEmployeeList(Model model,@PathVariable(value = "Location") String Location,HttpServletRequest request) throws IOException{
+		
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// shows employee repository
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
@@ -509,8 +532,10 @@ public class EmployeeController {
 	
 	@GetMapping("/Admin/AdminDashboard/PDF")
 
-	public String pdfGenEmployeeList(Model model) throws IOException{
-
+	public String pdfGenEmployeeList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// shows employee repository
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
@@ -641,8 +666,11 @@ public class EmployeeController {
 
 	@GetMapping("/Admin/AdminDashboard/DOCX")
 
-	public String docxGenEmployeeList(Model model) throws IOException{
+	public String docxGenEmployeeList(Model model,HttpServletRequest request) throws IOException{
 
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// shows employee repository
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
@@ -699,7 +727,10 @@ public class EmployeeController {
 	
 	@GetMapping("/Admin/AdminDashboard/XLSX")
 
-	public String xlsxGenEmployeeList(Model model) throws IOException{
+	public String xlsxGenEmployeeList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// shows employee repository
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		System.out.print(employeeservice.getAllEmployees());
@@ -768,8 +799,10 @@ public class EmployeeController {
 
 
 	@GetMapping("/Admin/AddEmployee")
-	public String showNewEmployeeForm(Model model,Model modelnew) {
-
+	public String showNewEmployeeForm(Model model,Model modelnew,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = new EmployeeDetails();
 		model.addAttribute("employee", employee);
 		modelnew.addAttribute("departments", getDepartments());
@@ -794,9 +827,10 @@ public class EmployeeController {
 	public String saveEmployee(@ModelAttribute("employee") EmployeeDetails employee,
 			@RequestParam("fileImage") MultipartFile multipartFile,Model model) throws IOException 
 	{
-
+		
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		employee.setPhoto(fileName);
+		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 		EmployeeDetails savedEmployee = employeeservice.saveEmployee(employee);
 		String uploadDir = "./Employee-Photos/" + savedEmployee.getEmpId();
 
@@ -830,8 +864,10 @@ public class EmployeeController {
 	 */
 
 	@GetMapping("/Admin/{id}/UpdateEmployee")
-	public String showFormForUpdate(@PathVariable(value = "id") int id, Model model, Model modelnew) {
-
+	public String showFormForUpdate(@PathVariable(value = "id") int id, Model model, Model modelnew,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		// get employee from the service
 		EmployeeDetails addemployee = employeeservice.getEmployeeById(id);
 
@@ -916,7 +952,10 @@ public class EmployeeController {
 	 */
 
 	@GetMapping("/DeleteEmployee/{id}")
-	public String deleteEmployee(@PathVariable(value = "id") int id) {
+	public String deleteEmployee(@PathVariable(value = "id") int id,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		this.employeeservice.deleteEmployeeById(id);		
 		System.out.println("ADMIN SIDE DELETE EMPLOYEE WINDOW");
 		return "redirect:/Admin/AdminDashboard";
@@ -924,8 +963,10 @@ public class EmployeeController {
 
 
 	@GetMapping("/Admin/ViewDepartmentList/PDF/{Location}")
-	public String pdfGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
-
+	public String pdfGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		for(int k=0;k<departments.size();k++) {
@@ -1004,7 +1045,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewDepartmentList/DOCX/{Location}")
 
-	public String docxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
+	public String docxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		for(int k=0;k<departments.size();k++) {
@@ -1055,7 +1099,10 @@ public class EmployeeController {
 	
 	@GetMapping("/Admin/ViewDepartmentList/XLSX/{Location}")
 
-	public String xlsxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location) throws IOException{
+	public String xlsxGenDepartmentSpecificList(Model model,@PathVariable(value = "Location") String Location,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		for(int k=0;k<departments.size();k++) {
@@ -1110,8 +1157,10 @@ public class EmployeeController {
 	
 
 	@GetMapping("/Admin/ViewDepartmentList/PDF")
-	public String pdfGenDepartmentList(Model model) throws IOException{
-
+	public String pdfGenDepartmentList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		
@@ -1182,7 +1231,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewDepartmentList/DOCX")
 
-	public String docxGenDepartmentList(Model model) throws IOException{
+	public String docxGenDepartmentList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		
@@ -1226,7 +1278,10 @@ public class EmployeeController {
 	
 	@GetMapping("/Admin/ViewDepartmentList/XLSX")
 
-	public String xlsxGenDepartmentList(Model model) throws IOException{
+	public String xlsxGenDepartmentList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		
@@ -1284,8 +1339,11 @@ public class EmployeeController {
 
 
 	@GetMapping("/Admin/ViewDepartmentList")
-	public String getAllDepartments(Model model)
+	public String getAllDepartments(Model model,HttpServletRequest request)
 	{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		System.out.println("ADMIN SIDE VIEW ALL DEPARTMENTS PAGE");
@@ -1302,7 +1360,10 @@ public class EmployeeController {
 	 */
 
 	@RequestMapping(value = "/Admin/AddDepartment")
-	public String adminAddDepartment(Model model) {
+	public String adminAddDepartment(Model model,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Department> departments= departmentservice.getAllDepartments();
 		model.addAttribute("departments",departments);
 		System.out.println("ADMIN SIDE ADD NEW DEPARTMENT WINDOW");
@@ -1319,8 +1380,11 @@ public class EmployeeController {
 	 */
 
 	@PostMapping("/SaveNewDepartment")
-	public String saveNewDepartment(@ModelAttribute("department") Department department) throws IOException
+	public String saveNewDepartment(@ModelAttribute("department") Department department,HttpServletRequest request) throws IOException
 	{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		dp.save(department);
 		return "redirect:/Admin/AdminDashboard";
 	}
@@ -1328,7 +1392,10 @@ public class EmployeeController {
 
 
 	@GetMapping("/Admin/ViewAttendanceRequests/PDF")
-	public String pdfGenAdminAttendanceList(Model model) throws IOException{
+	public String pdfGenAdminAttendanceList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Attendance> attendance = attendance_service.getAllAttendance();
 		model.addAttribute("listAttendance", attendance_service.getAllAttendance());
 		
@@ -1427,7 +1494,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/DOCX")
 
-	public String docxGenAdminAttendanceList(Model model) throws IOException{
+	public String docxGenAdminAttendanceList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Attendance> attendance = attendance_service.getAllAttendance();
 		model.addAttribute("listAttendance", attendance_service.getAllAttendance());
 		
@@ -1476,7 +1546,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/XLSX")
 
-	public String xlsxGenAdminAttendanceList(Model model) throws IOException{
+	public String xlsxGenAdminAttendanceList(Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<Attendance> attendance = attendance_service.getAllAttendance();
 		model.addAttribute("listAttendance", attendance_service.getAllAttendance());
 		
@@ -1530,7 +1603,10 @@ public class EmployeeController {
 	
 	
 	@GetMapping("/Admin/ViewAttendanceRequests/PDF/{Name}")
-	public String pdfGenEmployeeAttendanceListForAdmiByName(@PathVariable(value = "Name") String Name,Model model, Model modelnew) throws IOException{
+	public String pdfGenEmployeeAttendanceListForAdmiByName(@PathVariable(value = "Name") String Name,Model model, Model modelnew,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
 		int id=0;
 		for(int i = 0;i<listEmployees.size();i++) {
@@ -1643,7 +1719,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/DOCX/{Name}")
 
-	public String docxGenEmployeeAttendanceListForAdminByName(@PathVariable(value = "Name") String Name, Model model) throws IOException{
+	public String docxGenEmployeeAttendanceListForAdminByName(@PathVariable(value = "Name") String Name, Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
 		int id=0;
 		for(int i = 0;i<listEmployees.size();i++) {
@@ -1706,7 +1785,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/XLSX/{Name}")
 
-	public String xlsxGenEmployeeAttendanceListForAdminByName(@PathVariable(value = "Name") String Name,Model model) throws IOException{
+	public String xlsxGenEmployeeAttendanceListForAdminByName(@PathVariable(value = "Name") String Name,Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		//model.addAttribute("listEmployees", employeeservice.getAllEmployees());
 		List<EmployeeDetails> listEmployees = employeeservice.getAllEmployees();
 		int id=0;
@@ -1784,7 +1866,10 @@ public class EmployeeController {
 	 */
 
 	@GetMapping("/Admin/ViewAttendanceRequests")
-	public String attendance(Model model) {
+	public String attendance(Model model,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		model.addAttribute("listAttendance", attendance_service.getAllAttendance());
 		System.out.print(attendance_service.getAllAttendance());
 		System.out.println("ADMIN SIDE ATTENDANCE PAGE");
@@ -1792,16 +1877,20 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/Admin/ViewAttendanceRequests/new")
-	public String newAttendanceForm(Model model) {
+	public String newAttendanceForm(Model model,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		Attendance attendance = new Attendance();
 		model.addAttribute("attendance", attendance);
 		return "RegularizeAttendance";
 	}
 
 	@PostMapping("/saveAttendance")
-	public String saveAttendance(@ModelAttribute("attendance") Attendance attendance) {
-		// save attendance to db
-		//Attendance savedAttendance = attendance_service.insertAttendance(attendance);
+	public String saveAttendance(@ModelAttribute("attendance") Attendance attendance,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		return "redirect:/Admin/ViewAttendanceRequests";
 	}
 
@@ -1813,7 +1902,10 @@ public class EmployeeController {
 	 */
 
 	@GetMapping("/Admin/ViewAttendanceRequests/{id}/accept")
-	public String acceptAttendance(@PathVariable(value = "id") int id) {
+	public String acceptAttendance(@PathVariable(value = "id") int id,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		Attendance attendance = attendance_service.getAttendanceById(id);
 		attendance.setStatus("Accepted");
 		attendance_service.updateAttendance(attendance);
@@ -1823,7 +1915,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/Admin/ViewAttendanceRequests/{id}/reject")
-	public String rejectAttendance(@PathVariable(value = "id") int id) {
+	public String rejectAttendance(@PathVariable(value = "id") int id,HttpServletRequest request) {
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		Attendance attendance = attendance_service.getAttendanceById(id);
 		attendance.setStatus("Rejected");
 		attendance_service.updateAttendance(attendance);
@@ -1840,6 +1935,19 @@ public class EmployeeController {
 	// =============================================
 	// ================EMPLOYEE PAGES==============
 
+	public boolean sessionValidator(int id,HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		if( session.getAttribute("empId") == null) {
+			return false;
+		}
+		int empId = (int) session.getAttribute("empId");
+		if(empId == id) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 
 	/**
@@ -1851,7 +1959,10 @@ public class EmployeeController {
 
 
 	@GetMapping("/Employee/{id}/Dashboard")
-	public String employeeDashboard(@PathVariable(value = "id") int id, Model model) {
+	public String employeeDashboard(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) {
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		System.out.println("EMPLOYEE SIDE DASHBOARD PAGE -- VIEW SELF DETAILS");
@@ -1876,7 +1987,10 @@ public class EmployeeController {
 
 
 	@GetMapping("/Employee/{id}/RegularizeAttendance")
-	public String regularizeAttendance(@PathVariable(value = "id") int id, Model model) {
+	public String regularizeAttendance(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) {
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		Attendance attendance = new Attendance();
@@ -1901,7 +2015,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/Employee/{id}/EmployeeAttendanceRequests/PDF")
-	public String pdfGenEmployeeAttendanceList(@PathVariable(value = "id") int id,Model model) throws IOException{
+	public String pdfGenEmployeeAttendanceList(@PathVariable(value = "id") int id,Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2004,7 +2121,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Employee/{id}/EmployeeAttendanceRequests/DOCX")
 
-	public String docxGenEmployeeAttendanceList(@PathVariable(value = "id") int id, Model model) throws IOException{
+	public String docxGenEmployeeAttendanceList(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2057,7 +2177,10 @@ public class EmployeeController {
 	
 	@GetMapping("/Employee/{id}/EmployeeAttendanceRequests/XLSX")
 
-	public String xlsxGenEmployeeAttendanceList(@PathVariable(value = "id") int id,Model model) throws IOException{
+	public String xlsxGenEmployeeAttendanceList(@PathVariable(value = "id") int id,Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2122,7 +2245,10 @@ public class EmployeeController {
 	 */
 
 	@GetMapping("/Employee/{id}/EmployeeAttendanceRequests")
-	public String findAttendanceByEmpId(@PathVariable(value = "id") int id, Model model) {
+	public String findAttendanceByEmpId(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) {
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendances = ad.findAttendanceByEmpId(id);
@@ -2142,7 +2268,10 @@ public class EmployeeController {
 	 */
 
 	@GetMapping("/Employee/{id}/Update")
-	public String updateEmpDashboard(@PathVariable(value = "id") int id, Model model,Model modelnew) {
+	public String updateEmpDashboard(@PathVariable(value = "id") int id, Model model,Model modelnew,HttpServletRequest request) {
+		if(!sessionValidator(id, request)) {
+			return "redirect:/LoginPage";
+		}
 
 		// fetch employee data from db, put them into form and update them into form
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
@@ -2203,7 +2332,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/Admin/ViewAttendanceRequests/{id}/PDF")
-	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
+	public String pdfGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2304,7 +2436,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/{id}/DOCX")
 
-	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id, Model model) throws IOException{
+	public String docxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
@@ -2355,7 +2490,10 @@ public class EmployeeController {
 	}
 	@GetMapping("/Admin/ViewAttendanceRequests/{id}/XLSX")
 
-	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model) throws IOException{
+	public String xlsxGenEmployeeAttendanceListForAdmin(@PathVariable(value = "id") int id,Model model,HttpServletRequest request) throws IOException{
+		if(!sessionValidatorAdmin(request)) {
+			return "redirect:/LoginPage";
+		}
 		EmployeeDetails employee = employeeservice.getEmployeeById(id);
 		model.addAttribute("employee", employee);
 		List<Attendance> attendance = ad.findAttendanceByEmpId(id);
