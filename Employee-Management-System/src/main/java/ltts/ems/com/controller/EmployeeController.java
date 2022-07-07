@@ -84,8 +84,7 @@ public class EmployeeController {
 	DepartmentService departmentservice;
 	@Autowired
 	DepartmentRepository dp;
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+	
 	
 
 
@@ -143,7 +142,6 @@ public class EmployeeController {
 			return "redirect:/LoginPage";
 		}
 		model.addAttribute("listEmployees", employeeservice.getAllEmployees());
-		System.out.print(employeeservice.getAllEmployees());
 		return findPaginated(1, model);
 	}
 	
@@ -162,6 +160,7 @@ public class EmployeeController {
 
 	@GetMapping("/Admin/AdminDashboard/LIST/{pageNo}")
 	public String findPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) {
+		System.out.println("###############################################################");
 
 		int pageSize = 4;
 		
@@ -830,7 +829,7 @@ public class EmployeeController {
 		
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		employee.setPhoto(fileName);
-		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+		employee.setPassword(employee.getPassword());
 		EmployeeDetails savedEmployee = employeeservice.saveEmployee(employee);
 		String uploadDir = "./Employee-Photos/" + savedEmployee.getEmpId();
 

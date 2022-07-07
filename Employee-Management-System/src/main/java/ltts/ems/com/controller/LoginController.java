@@ -50,11 +50,11 @@ public class LoginController {
 		
 		username=request.getParameter("usrnm");
 		password=request.getParameter("psw");
-		String expectedPassword = emp.getEmployeeByUsername(username).getPassword();
+		//String expectedPassword = emp.getEmployeeByUsername(username).getPassword();
 		EmployeeDetails theemployee = null;
-		if(passwordEncoder.matches(password, expectedPassword)) {
-			theemployee=emp.findByUserNameAndPassword(username,expectedPassword);
-		}
+		//if(passwordEncoder.matches(password, expectedPassword)) {
+		theemployee=emp.findByUserNameAndPassword(username,password);
+		//}
 		if(theemployee==null)
 		{
 			return new ModelAndView("LoginError");
