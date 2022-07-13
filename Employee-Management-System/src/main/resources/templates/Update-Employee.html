@@ -223,7 +223,7 @@
 		<a th:href="RegularizeAttendance">REGULARIZE ATTENDANCE</a>
 		<a th:href="EmployeeAttendanceRequests">VIEW ATTENDANCE</a>
 
-		<div class="username topnavusername"><a href="" style="margin-left: 680px;">Welcome
+		<div class="username topnavusername"><a href="" style="margin-left: 600px;">Welcome
 				<span style="text-transform: lowercase; margin-left:1px;"
 					th:text="${employee.firstName+ ' '  + employee.lastName}"></span></a></div>
 		<a href="/LoginPage" style="float:right;">LOGOUT</a>
@@ -375,6 +375,17 @@
 
 			<div class="row">
 
+			</div>
+			
+			<div class="row">
+				<div class="col-25">
+					<label for="em">EMAIL *</label>
+				</div>
+				<div class="col-75">
+					<input @keydown.space.prevent type="text" th:field="*{email}" placeholder="Email.."
+						style="text-transform: lowercase" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" oninvalid="setCustomValidity('Please remove blank spaces')"
+     onkeyup="setCustomValidity('')" required>
+				</div>
 			</div>
 
 

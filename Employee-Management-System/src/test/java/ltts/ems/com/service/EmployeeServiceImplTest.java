@@ -34,10 +34,10 @@ class EmployeeServiceImplTest {
 	@BeforeEach
 	void setup() {
 		this.employeeService = new EmployeeServiceImpl(this.employeerepository);
-		edList.add(new EmployeeDetails(1,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo"));
-		edList.add(new EmployeeDetails(2,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo"));
-		edList.add(new EmployeeDetails(3,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo"));
-		edList.add(new EmployeeDetails(4,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo"));
+		edList.add(new EmployeeDetails(1,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo","itsaryansingh2019@gmail.com"));
+		edList.add(new EmployeeDetails(2,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo","itsaryansingh2019@gmail.com"));
+		edList.add(new EmployeeDetails(3,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo","itsaryansingh2019@gmail.com"));
+		edList.add(new EmployeeDetails(4,"firstName","lastName", "userName","password",LocalDate.now(), "gender" , LocalDate.now(), "role","departmentName","photo","itsaryansingh2019@gmail.com"));
 	}
 	
 	@Test

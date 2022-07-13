@@ -1,5 +1,8 @@
 package ltts.ems.com.model;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -8,7 +11,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import ltts.ems.com.EmployeeUserDetailsServiceImpl;
+import ltts.ems.com.repository.EmployeeRepository;
+import ltts.ems.com.service.EmployeeService;
+import toolKit.JavaMail;
 
 @Entity
 @Table(name="Attendance")
@@ -27,6 +36,7 @@ public class Attendance {
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	private Date outTime;
 	private String  status = "Pending";
+	//private String email = employee.getEmail();
 
 
 
@@ -80,7 +90,18 @@ public class Attendance {
 	public String getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(String status, String email) {
+		try {
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
+            String in = dateFormat.format(this.inTime);  
+            String out = dateFormat.format(this.outTime);  
+            System.out.println(email);
+            
+			JavaMail.mailCraft(email,status, in, out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.status = status;
 	}
 	@Override

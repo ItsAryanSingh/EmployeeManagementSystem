@@ -33,7 +33,7 @@ public class EmployeeDetails {
 	private String departmentName;
 	@Column(length = 45, nullable = true)
 	private String photo;
-	
+	private String email;
 	
 	public EmployeeDetails() {
 		super();
@@ -43,7 +43,7 @@ public class EmployeeDetails {
 
 	public EmployeeDetails(int empId, String firstName, String lastName, String userName, String password,
 			LocalDate dateOfJoining, String gender, LocalDate dateOfBirth, String role, String departmentName,
-			String photo) {
+			String photo, String email) {
 		super();
 		this.empId = empId;
 		this.firstName = firstName;
@@ -56,6 +56,15 @@ public class EmployeeDetails {
 		this.role = role;
 		this.departmentName = departmentName;
 		this.photo = photo;
+		this.email = email;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+	
+	public void setEmail(String newEmail) {
+		this.email = newEmail;
 	}
 
 

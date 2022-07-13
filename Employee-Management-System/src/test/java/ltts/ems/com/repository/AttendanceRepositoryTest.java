@@ -37,7 +37,7 @@ class AttendanceRepositoryTest {
     void setUp() {
     	LocalDate ldStart = LocalDate.parse("2022-06-22");
     	LocalDate ldBirth = LocalDate.parse("2022-06-22");
-    	ed = new EmployeeDetails(1000,"Dummy","User","dummyUserName1","dummyUserPassWord1",ldStart,"Neutral",ldBirth,"None","None","None");
+    	ed = new EmployeeDetails(1000,"Dummy","User","dummyUserName1","dummyUserPassWord1",ldStart,"Neutral",ldBirth,"None","None","None","itsaryansingh2019@gmail.com");
     	empRepo.save(ed);
     	inTime = new Date();
     	outTime = new Date();

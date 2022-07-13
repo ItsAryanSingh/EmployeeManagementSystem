@@ -4,23 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.system.SystemProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ltts.ems.com.model.EmployeeDetails;
-import ltts.ems.com.repository.DepartmentRepository;
 import ltts.ems.com.repository.EmployeeRepository;
+import toolKit.AES256;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	EmployeeRepository employeerepository;
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 	
 	public EmployeeServiceImpl(EmployeeRepository employeerepositoryMock) {
 		employeerepository = employeerepositoryMock;
@@ -31,21 +28,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 		List<EmployeeDetails> listOfEmployees = new ArrayList<EmployeeDetails>(employeerepository.findAll());
 		List<EmployeeDetails> listOfEmployeesDecrypted = new ArrayList<EmployeeDetails>(employeerepository.findAll());
 		List<String> passList = new ArrayList<String>();
-		System.out.println("\n\n\n");
-		System.out.println(listOfEmployees);
 		for(int i=0;i < listOfEmployees.size();i++) {
-			System.out.println(">>>>>");
-			System.out.println(listOfEmployees.get(i).getPassword());
 			String password = AES256.decrypt(listOfEmployees.get(i).getPassword());
-			System.out.println(password);
 			passList.add(password);
-			//listOfEmployeesDecrypted.get(i).setPassword(password);
-			//listOfEmployees.get(i).setPassword(AES256.decrypt(listOfEmployees.get(i).getPassword()));
-		}
-		System.out.println(passList);
-		for(int i=0;i < passList.size();i++) {
 			listOfEmployeesDecrypted.get(i).setPassword(passList.get(i));
-			//listOfEmployees.get(i).setPassword(AES256.decrypt(listOfEmployees.get(i).getPassword()));
 		}
 		return listOfEmployeesDecrypted;
 

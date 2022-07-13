@@ -46,6 +46,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 //import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
@@ -53,6 +54,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,6 +71,8 @@ import ltts.ems.com.repository.DepartmentRepository;
 import ltts.ems.com.service.AttendanceService;
 import ltts.ems.com.service.DepartmentService;
 import ltts.ems.com.service.EmployeeService;
+import toolKit.JavaMail;
+
 
 
 @Controller
@@ -1053,7 +1057,6 @@ public class EmployeeController {
 		for(int k=0;k<departments.size();k++) {
 			System.out.println(departments.get(k).getLocation().toUpperCase()+"->"+Location.toUpperCase());
 			if (!(departments.get(k).getLocation().toUpperCase().equals(Location.toUpperCase()))) {
-				System.out.println("->Here");
 				departments.remove(k);
 				k-=1;
 			}
@@ -1906,7 +1909,7 @@ public class EmployeeController {
 			return "redirect:/LoginPage";
 		}
 		Attendance attendance = attendance_service.getAttendanceById(id);
-		attendance.setStatus("Accepted");
+		attendance.setStatus("Accepted",employeeservice.getEmployeeById(attendance.getEmpId()).getEmail());
 		attendance_service.updateAttendance(attendance);
 		System.out.println("ADMIN SIDE ATTENDANCE PAGE -- APPROVE/REJECT ATTENDANCE");
 		return "redirect:/Admin/ViewAttendanceRequests";
@@ -1919,7 +1922,7 @@ public class EmployeeController {
 			return "redirect:/LoginPage";
 		}
 		Attendance attendance = attendance_service.getAttendanceById(id);
-		attendance.setStatus("Rejected");
+		attendance.setStatus("Rejected",employeeservice.getEmployeeById(attendance.getEmpId()).getEmail());
 		attendance_service.updateAttendance(attendance);
 		return "redirect:/Admin/ViewAttendanceRequests";
 
@@ -1948,17 +1951,29 @@ public class EmployeeController {
 		}
 	}
 
+	public void genText() throws IOException {
+			File file = new File(System.getProperty("user.dir")+"/target/classes/toolKit/mailAddress1.txt");
+			FileWriter fw = new FileWriter(file);
+			PrintWriter pw  = new PrintWriter(fw);
+			pw.println("itsaryansingh2019@gmail.com"); 
+			pw.close();
+			System.out.println("\n\n\n\n\n wrote to file");
 
+		
+	}
+	
 	/**
 	 * Employee side page -- Employee dashboard page
 	 * @param id Contains unique employee id to fetch the respective details from database
 	 * @param model Display the employee details
 	 * @return Display the employee details
+	 * @throws IOException 
+	 * @throws Exception 
 	 */
-
+	
 
 	@GetMapping("/Employee/{id}/Dashboard")
-	public String employeeDashboard(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) {
+	public String employeeDashboard(@PathVariable(value = "id") int id, Model model,HttpServletRequest request) throws IOException {
 		if(!sessionValidator(id, request)) {
 			return "redirect:/LoginPage";
 		}
@@ -1968,7 +1983,7 @@ public class EmployeeController {
 		return "EmployeeDashboard";
 	}
 
-
+	
 	@GetMapping("/EmployeeDashboard")
 	public String employeeDashboard(Model model) {
 

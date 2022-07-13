@@ -62,6 +62,7 @@ public class LoginController {
 		
 		HttpSession session = request.getSession();
 		session.setAttribute("empId", theemployee.getEmpId());
+		session.setMaxInactiveInterval(60*5);//timeout after 5 minutes of inactivity
 		if(theemployee.getRole().equals("ADMIN")) {
 			session.setAttribute("isAdmin", true);
 		}

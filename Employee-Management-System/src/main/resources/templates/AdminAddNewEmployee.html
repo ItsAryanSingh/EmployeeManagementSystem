@@ -281,7 +281,6 @@
 		<form action="#" th:action="@{/saveEmployee}" th:object="${employee}" method="POST"
 			enctype="multipart/form-data">
 
-
 			<div class="row">
 				<div class="col-25">
 					<label for="fname">FIRST NAME *</label>
@@ -411,6 +410,16 @@
 						update();
 					</script>
 
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="em">EMAIL *</label>
+				</div>
+				<div class="col-75">
+					<input @keydown.space.prevent type="text" th:field="*{email}" placeholder="Email.."
+						style="text-transform: lowercase" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" oninvalid="setCustomValidity('Please remove blank spaces')"
+     onkeyup="setCustomValidity('')" required>
 				</div>
 			</div>
 
